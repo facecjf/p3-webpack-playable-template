@@ -1,5 +1,5 @@
 const { merge } = require('webpack-merge');
-const common = require('./webpack.config.js');
+const common = require('./webpack.config.js'); //const common = require('./webpack.build.js');
 const TerserPlugin = require("terser-webpack-plugin");
 const HtmlInlineScriptPlugin  = require("html-inline-script-webpack-plugin");
 
