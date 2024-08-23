@@ -13,11 +13,15 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     preload () {
-        console.log('%cSCENE::PreloaderScene', 'color: #fff; background: #f00;')
-
+        console.log('%cSCENE::Preload', 'color: #fff; background: #ff1462;')
+    
         this
             .addAudio('sound_fx', require('../audio/sound_fx.mp3'))
-            .addTexture('bg', require('../img/logo.png'))
+            .addTexture('bg', require('../img/bg.png'))
+            .addTexture('logo', require('../img/logo.png'))
+            .addTexture('cta', require('../img/cta.png'))
+            .addTexture('uihand', require('../img/ui_hand.png'))
+            .addTexture('button', require('../img/button.png'))
 
         this.textures.on('onload', () => countDecodedTexture++, this)
         this.sound.on('decoded', () => countDecodedAudio++, this)
@@ -71,5 +75,3 @@ export default class PreloaderScene extends Phaser.Scene {
         }
     }
 }
-
-
