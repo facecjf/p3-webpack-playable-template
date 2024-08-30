@@ -44,17 +44,17 @@ The finished `index.html` file is waiting for you in the `dist` folder
 Resource loading is declared in `js/PreloaderScene.js`
 ```bash
 const audioFiles = {
-    custom_name1: require('../audio/custom_name1.mp3')
+    custom_name1: require('../audio/filename1.mp3')
 };
 const textureFiles = {
-    custom_name2: require('../img/custom_name2.png'),
+    custom_name2: require('../img/filename2.png'),
 };
 const atlasFiles = {
     gameAtlas: {
-        png: require('../img/filename4.png'),
-        json: require('../json/filename4.json')
+        png: require('../img/filename3.png'),
+        json: require('../json/filename3.json')
     }
 };
-this.addBitmapText('custom_name3', require('../font/custom_name3.png'), require('../font/custom_name3.xml'));
+this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
 ```
 
