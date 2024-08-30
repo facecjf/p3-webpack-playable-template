@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: "bundle.min.js",
+    filename: "playable.js",
     path: path.resolve(__dirname, 'dist/'),
     clean: true
   },
@@ -22,7 +22,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(gif|png|jpe?g|svg|mp3|m4a|ogg|wav|json$)$/i,
+        test: /\.(gif|png|jpe?g|svg|mp3|m4a|ogg|wav|json|xml$)$/i,
         type: 'asset/inline'
       },
     ]
@@ -32,8 +32,14 @@ module.exports = {
       CANVAS_RENDERER: JSON.stringify(true),
       WEBGL_RENDERER: JSON.stringify(true)
     }),
+    // Disable for .js only file Build
     new HtmlWebpackPlugin({
-      template: "./src/index.html"
+      template: './src/index.html',
+      inject: 'body',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true
+      }
     }),
   ]
 };
