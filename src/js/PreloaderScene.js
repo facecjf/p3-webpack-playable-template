@@ -19,7 +19,7 @@ export default class PreloaderScene extends Phaser.Scene {
         const textureFiles = {
             bg: require('../img/bg.png'),
             logo: require('../img/logo.png'),
-            cta: require('../img/cta.png'),
+            cta: require('../img/cta_blank.png'),
             uihand: require('../img/ui_hand.png'),
             button: require('../img/button.png')
         };
