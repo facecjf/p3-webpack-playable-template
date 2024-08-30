@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 // AD NETWORK SPECIFIC FUNCTIONS
-    //MINTEGRAL
+    // MINTEGRAL
     // globalThis.gameStart = function () {
     //    parent.postMessage("start","*");
     //    console.log("game started");
@@ -20,10 +20,11 @@ import Phaser from "phaser";
 	//dapi.getScreenSize();
 	//dapi.isViewable();
 	//dapi.getAudioVolume();
-    // IRONSOURCE
+
     // globalThis.muteGameSound = function () {
     //     scene.sound.setMute(true)
-    // } 
+    // }
+
 const items = [];
 const objectsArt = [];
 
@@ -72,6 +73,7 @@ export default class MainScene extends Phaser.Scene {
     
     // CAMERA //
     //camera.centerOn(width_og/2, height_og/2)
+    
     // BG //
     bg = this.add.image(width/2, height/2, "bg");
     bg.setScale(1)
@@ -82,69 +84,47 @@ export default class MainScene extends Phaser.Scene {
         bg.setDisplaySize(width,width)
       }
     
+    // Create buttons
+    const createButton = (x, isButton1) => {
+        const button = this.add.image(x, height/2, 'button').setInteractive().setScale(scaleFactor);
+        
+        button.on('pointerdown', function () {
+            console.log(`click / ${isButton1 ? 'uiButton1' : 'uiButton2'} works`);
+            
+            if (isButton1) button1Clicked = true;
+            else button2Clicked = true;
+
+            if (!firstClick) firstClick = true;
+
+            // TWEEN
+            this.tweens.add({
+                targets: button,
+                scaleX: `-=${0.1 * scaleFactor}`,
+                scaleY: `-=${0.1 * scaleFactor}`,
+                ease: 'Sine.easeInOut',
+                duration: 200,
+                yoyo: true,
+                onComplete: () => {
+                    button.visible = false;
+                    if ((isButton1 && button2Clicked) || (!isButton1 && button1Clicked)) {
+                        gameOver = true;
+                        gameOverMan();
+                    }
+                }
+            });
+
+            removeTweens(this);
+            gameStep++;
+        }, this);
+
+        return button;
+    };
+
     // UI BUTTON 1
-    const uiButton1 = this.add.image(bg.x - 120*scaleFactor, height/2, 'button').setInteractive()
-    //uiButton1.setDepth(15)
-    uiButton1.setScale(1*scaleFactor)
-    uiButton1.on('pointerdown', function () {
-        console.log('click / uiButton1 works')
-       
-        button1Clicked = true
-        if(!firstClick) {
-            firstClick = true
-        }
-        // TWEEN
-        const uiButton1Tween = this.tweens.add({targets: uiButton1, scaleX: '-=.1', scaleY: '-=.1', ease: 'Sine.easeInOut', duration: 200, delay: 0, completeDelay: 0, yoyo: true, loop: 0,  
-        onStart: function () {
-          uiButton1.setScale(1*scaleFactor)
-         
-        }, onComplete: function () { 
-            uiButton1.visible = false
-            if (button2Clicked) {
-                gameOver = true
-                ///enable for timer control 
-                //gameTimeEvent.delay = 0
-                ///disable for timer control 
-                gameOverMan() 
-            }  
-        }})
-        uiButton1Tween.play()
-        removeTweens(this)
-        gameStep++
-    }, this)
+    const uiButton1 = createButton(bg.x - 120 * scaleFactor, true);
 
     // UI BUTTON 2
-    const uiButton2 = this.add.image(bg.x + 120*scaleFactor, height/2, 'button').setInteractive()
-    //uiButton2.setDepth(15)
-    uiButton2.setScale(1*scaleFactor)
-    uiButton2.on('pointerdown', function () {
-        console.log('click / uiButton2 works') 
-        button2Clicked = true
-        if(!firstClick) {
-            firstClick = true
-        }
-        // TWEEN
-        const uiButton2Tween = this.tweens.add({targets: uiButton2, scaleX: '-=.1', scaleY: '-=.1', ease: 'Sine.easeInOut', duration: 200, delay: 0, completeDelay: 0, yoyo: true, loop: 0,  
-        onStart: function () {
-          uiButton2.setScale(1*scaleFactor)
-         
-        }, onComplete: function () { 
-          uiButton2.visible = false
-            if (button1Clicked) {
-                gameOver = true
-                ///enable for timer control 
-                //gameTimeEvent.delay = 0
-                ///disable for timer control 
-                gameOverMan() 
-            } 
-        }})
-        uiButton2Tween.play()
-        removeTweens(this)
-        gameStep++
-    }, this)
-
-    // Container
-    // const buttonContainer = this.add.container(bg.x, bg.y, [ uiButton1, uiButton2]);
+    const uiButton2 = createButton(bg.x + 120 * scaleFactor, false);
 
     // LOGO //
 	const logo = this.add.image(0, 0, "logo");
@@ -157,6 +137,7 @@ export default class MainScene extends Phaser.Scene {
             if(gamePhase < 3) { 
             gameOver = true
             gameOverMan() 
+            gamePhase = 3
             }
       })
     CTA.setScale(1*scaleFactor)
@@ -195,37 +176,7 @@ export default class MainScene extends Phaser.Scene {
         if (gameOver && gamePhase > 2) {
             if(!ctaClicked) {
                 ctaClicked = true
-                //clickCTA()
-                // GOOGLE (dcm & adwords) ~USE THIS
-                    //window.open(window.globalThis.clickTag);
-
-                // GOOGLE (adwords)
-                    //ExitApi.exit();
-
-                // IRONSOURCE
-                    //dapi.openStoreUrl();
-
-                // FACEBOOK / MOLOCO / TENCENT
-                    //FbPlayableAd.onCTAClick();
-
-                // APPLOVIN / LIFTOFF / ADCOLONY / CHARTBOOST
-                    //mraid.open();
-
-                // TIKTOK
-                    //window.openAppStore();
-
-                // UNITY
-                    //mraid.open(url);
-                //MINTEGRAL
-                    // gameClose(this);
-                    // window.install && window.install();
-                // APPLOVIN / LIFTOFF / ADCOLONY / CHARTBOOST
-                    //mraid.open();
-                // VUNGLE
-                    // ctaButton.onclick = function(){
-                    //     parent.postMessage('download','*');
-                    // };
-                console.log('end click!')
+                clickCTA()
             } 
         } else if (!firstClick && !gameOver) {
             firstClick = true
@@ -285,6 +236,54 @@ export default class MainScene extends Phaser.Scene {
 
     // FUNCTIONS ///////////////////////////////////////////////////////////////////////////////////////
     // CTA CLICKED FUNCTION //
+    globalThis.clickCTA = function() {
+        console.log('CTA Clicked')
+        // GOOGLE (dcm & adwords) ~USE THIS
+        //window.open(window.globalThis.clickTag);
+
+        // GOOGLE (adwords)
+        //ExitApi.exit();
+
+        // IRONSOURCE
+        //dapi.openStoreUrl();
+
+        // FACEBOOK / MOLOCO / TENCENT
+        //FbPlayableAd.onCTAClick();
+
+        // APPLOVIN / LIFTOFF / ADCOLONY / CHARTBOOST
+        //mraid.open();
+
+        // TIKTOK
+        //window.openAppStore();
+
+        // UNITY
+        //mraid.open(url);
+
+        // MINTEGRAL
+        // gameClose(this);
+        // window.install && window.install();
+
+        // APPLOVIN / LIFTOFF / ADCOLONY / CHARTBOOST
+        //mraid.open();
+
+        // VUNGLE
+        // ctaButton.onclick = function(){
+        //     parent.postMessage('download','*');
+        // };
+    }
+
+    // End game Ad network specific functions
+    globalThis.endGameAd = function() {
+        console.log('End Ad')
+        // VUNGLE 
+        // function gameCompleted() {
+        //     parent.postMessage('complete','*');
+        //     console.log('Ad experience has completed');
+        // };
+        // MINTEGRAL
+        // window.gameEnd && window.gameEnd();
+    }
+
     // game over function
     function gameOverMan () {
         uiHand.visible = false
@@ -302,6 +301,7 @@ export default class MainScene extends Phaser.Scene {
         }
         console.log(gamePhase)
     }
+
     // ui hand helper : (set start POS & tween direction with parameters)
     function UIhandHelper (startX, startY, handRot) {
       uiHand.x = startX
@@ -418,14 +418,7 @@ export default class MainScene extends Phaser.Scene {
         } 
     } else if (gamePhase == 2 && gameOver) { // Game Phase ie:2
             console.log('Phase 3 Game Over EM')
-            // vungle 
-                // function gameCompleted() {
-                //     parent.postMessage('complete','*');
-                //     console.log('Ad experience has completed');
-                // };
-            // Mintegral
-                // window.gameEnd && window.gameEnd();
-            // Mintegral
+            endGameAd(this)
             gamePhase++
     } else if (gamePhase == 3 && gameOver) { // End Modal Phase ie:3
         if (ctaClicked) {
