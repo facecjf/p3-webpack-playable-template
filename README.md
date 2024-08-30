@@ -12,7 +12,7 @@ You can also try [Phaser Parcel Template](https://github.com/vardanyanlg/phaser3
 - Modern code with inheritance classes, arrow functions, as well as asynchronous code, and all this will work even in older browsers thanks to the built-in BabelJS
 
 ### Requirements
-[Node.js](https://nodejs.org/) (with npm) and I recommend installing and using [Yarn 3](https://yarnpkg.com/).
+[Node.js](https://nodejs.org/) (with npm)
 
 ### Getting Started
 You need to either download this project or clone it:
@@ -25,19 +25,19 @@ cd phaser3-webpack-playable
 ```
 Now you need to install all the necessary dependencies for the project to work:
 ```bash
-yarn install
+npm install
 ```
 
 Everything is ready to start the project.
 For local testing use (localhost:8000 will open auto in browser) and without stat warnings
 ```bash
-yarn watch
+npm start
 ```
-Or use `yarn start` for start dev server with show stat warnings
+Or use `npm start` for start dev server with show stat warnings
 
 To build the final file use
 ```bash
-yarn build
+npm run build
 ```
 
 The finished `index.html` file is waiting for you in the `dist` folder
