@@ -45,11 +45,14 @@ The finished `index.html` file is waiting for you in the `dist` folder
 #### Assets Loading
 Resource loading is declared in `js/PreloaderScene.js`
 ```bash
-this
-    .addAudio("custom_name",'../audio/filename.mp3')
-    .addTexture("custom_name2",'../img/filename2.png')
-    .addBitmapText('custom_name3',require('../font/filename3.png'),require('../font/filename3.xml'))
-    .addAtlas('custom_name4',require('../img/filename4.png'),require('../img/filename4.json'))
+const audioFiles = {
+    custom_name1: require('../audio/custom_name1.mp3')
+};
+const textureFiles = {
+    custom_name2: require('../img/custom_name2.png'),
+};
+this.addBitmapText('custom_name3', require('../font/custom_name3.png'), require('../font/custom_name3.xml'));
+this.addAtlas('custom_name4',require('../img/filename4.png'),require('../img/filename4.json'))    
 ```
 
 
