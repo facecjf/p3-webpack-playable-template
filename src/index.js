@@ -5,11 +5,11 @@ import MainScene from './js/MainScene.js';
 const gameConfig = {
     type: Phaser.AUTO,
     parent: 'gameContainer',
-    backgroundColor: '#7720a8',
+    backgroundColor: '#000000',
     scale: {
         mode: Phaser.Scale.FIT,
-        width: 639,
-        height: 1136,
+        width: window.innerWidth,
+        height: window.innerHeight,
         autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     scene: null
