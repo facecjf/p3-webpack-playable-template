@@ -3,12 +3,11 @@
 ## Phaser 3 + Webpack 5 with auto base64 assets decode
 > A Phaser 3 project template for JavaScript (ES6 support via Babel) and Webpack 5 that includes local server with  hot-reloading for development and production builds in one file with assets on base64.
 
-You can also try [Phaser Parcel Template](https://github.com/vardanyanlg/phaser3-parcel-playable "Phaser 3 Playable Ads") or [Pixi Webpack Template](https://github.com/vardanyanlg/pixi-webpack-playable "Pixi Playable Ads")
-
 ### Features
 - The project is assembled into one file and is ready for any ad networks.
 - Final build with minification and code optimization
 - All assets will automatically be base64 encoded and embedded in the project
+- Updated preloader methods for handling bitmap base64 encoded correctly
 - Modern code with inheritance classes, arrow functions, as well as asynchronous code, and all this will work even in older browsers thanks to the built-in BabelJS
 
 ### Requirements
