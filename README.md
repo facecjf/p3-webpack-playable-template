@@ -32,7 +32,6 @@ For local testing use (localhost:8000 will open auto in browser) and without sta
 ```bash
 npm start
 ```
-Or use `npm start` for start dev server with show stat warnings
 
 To build the final file use
 ```bash
