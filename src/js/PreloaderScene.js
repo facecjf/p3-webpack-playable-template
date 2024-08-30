@@ -16,6 +16,7 @@ export default class PreloaderScene extends Phaser.Scene {
         const audioFiles = {
             sound_fx: require('../audio/sound_fx.mp3')
         };
+        
         const textureFiles = {
             bg: require('../img/bg.png'),
             logo: require('../img/logo.png'),
@@ -24,8 +25,16 @@ export default class PreloaderScene extends Phaser.Scene {
             button: require('../img/button.png')
         };
 
+        const atlasFiles = {
+            // gameAtlas: {
+            //     png: require('../img/game_atlas.png'),
+            //     json: require('../img/game_atlas.json')
+            // }
+        };
+
         Object.entries(audioFiles).forEach(([key, value]) => this.addAudio(key, value));
         Object.entries(textureFiles).forEach(([key, value]) => this.addTexture(key, value));
+        Object.entries(atlasFiles).forEach(([key, {png, json}]) => this.addAtlas(key, png, json));
         
         // Add the game font
         //this.addBitmapText('gameFont', require('../font/gameFont_0.png'), require('../font/gameFont.xml'));
