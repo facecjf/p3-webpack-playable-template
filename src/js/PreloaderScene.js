@@ -1,15 +1,14 @@
 import Phaser from "phaser";
 import MainScene from './MainScene.js';
 
-let loadMain = false;
-let countDecodedAudio = 0;
-let allAudio = 0;
-let countDecodedTexture = 0;
-let allTextures = 0;
-
 export default class PreloaderScene extends Phaser.Scene {
-    constructor () {
-        super({ key: 'Preload' })
+    constructor() {
+        super({ key: 'Preload' });
+        this.loadMain = false;
+        this.countDecodedAudio = 0;
+        this.allAudio = 0;
+        this.countDecodedTexture = 0;
+        this.allTextures = 0;
     }
 
     preload () {
