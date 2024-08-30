@@ -14,64 +14,77 @@ export default class PreloaderScene extends Phaser.Scene {
 
     preload () {
         console.log('%cSCENE::Preload', 'color: #fff; background: #ff1462;')
-    
-        this
-            .addAudio('sound_fx', require('../audio/sound_fx.mp3'))
-            .addTexture('bg', require('../img/bg.png'))
-            .addTexture('logo', require('../img/logo.png'))
-            .addTexture('cta', require('../img/cta.png'))
-            .addTexture('uihand', require('../img/ui_hand.png'))
-            .addTexture('button', require('../img/button.png'))
+        const audioFiles = {
+            sound_fx: require('../audio/sound_fx.mp3')
+        };
+        const textureFiles = {
+            bg: require('../img/bg.png'),
+            logo: require('../img/logo.png'),
+            cta: require('../img/cta.png'),
+            uihand: require('../img/ui_hand.png'),
+            button: require('../img/button.png')
+        };
 
-        this.textures.on('onload', () => countDecodedTexture++, this)
-        this.sound.on('decoded', () => countDecodedAudio++, this)
-    }
-    addBitmapText(key,vPNG,vXML) {
-        const blob = this.dataURLtoBlob(vPNG)
-        const url = URL.createObjectURL(blob);
-        const blob2 = this.dataURLtoBlob(vXML)
-        const url2 = URL.createObjectURL(blob2);
-
-        this.load.bitmapFont(key,url,url2)
-
-        return this
-    }
-    addAtlas(key,vPNG,vXML) {
-        const blob = this.dataURLtoBlob(vPNG)
-        const url = URL.createObjectURL(blob);
-        const blob2 = this.dataURLtoBlob(vXML)
-        const url2 = URL.createObjectURL(blob2);
-
-        this.load.atlas(key,url,url2)
-
-        return this
-    }
-    dataURLtoBlob(dataurl) {
-        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
+        Object.entries(audioFiles).forEach(([key, value]) => this.addAudio(key, value));
+        Object.entries(textureFiles).forEach(([key, value]) => this.addTexture(key, value));
         
-        return new Blob([u8arr], { type: mime });
+        // Add the game font
+        this.addBitmapText('gameFont', require('../font/gameFont_0.png'), require('../font/gameFont.xml'));
+
+        this.textures.on('onload', this.incrementDecodedTexture, this);
+        this.sound.on('decoded', this.incrementDecodedAudio, this);
     }
-    addAudio(arg1,arg2) {
-        allAudio++
-        this.sound.decodeAudio(arg1, arg2)
-        return this
+    
+    addBitmapText(key, vPNG, vXML) {
+        const pngUrl = this.createBase64Url(vPNG, 'image/png');
+        const xmlUrl = this.createBase64Url(vXML, 'application/xml');
+
+        this.load.bitmapFont(key, pngUrl, xmlUrl);
+
+        return this;
     }
-    addTexture(arg1,arg2) {
-        allTextures++
-        this.textures.addBase64(arg1, arg2)
-        return this
+
+    createBase64Url(data, mimeType) {
+        // Check if the data is already a data URL
+        if (data.startsWith('data:')) {
+            return data;
+        }
+        // If it's not, create a data URL
+        return `data:${mimeType};base64,${data}`;
     }
+
+    addAtlas(key, vPNG, vJSON) {
+        const pngUrl = this.createBase64Url(vPNG, 'image/png');
+        const jsonUrl = this.createBase64Url(vJSON, 'application/json');
+
+        this.load.atlas(key, pngUrl, jsonUrl);
+
+        return this;
+    }
+
+    addAudio(key, data) {
+        this.allAudio++;
+        this.sound.decodeAudio(key, data);
+        return this;
+    }
+
+    addTexture(key, data) {
+        this.allTextures++;
+        this.textures.addBase64(key, data);
+        return this;
+    }
+
+    incrementDecodedTexture = () => this.countDecodedTexture++;
+    incrementDecodedAudio = () => this.countDecodedAudio++;
+
     create() {
-        loadMain = true
+        this.loadMain = true;
     }
-   update() {
-        if (loadMain && (countDecodedAudio >= allAudio) && (countDecodedTexture >= allTextures)) {
-            console.log('%cSCENE::Loaded', 'color: #000; background: #0f0;')
-            this.scene.start("Main")
+
+    update() {
+        if (this.loadMain && (this.countDecodedAudio >= this.allAudio) && (this.countDecodedTexture >= this.allTextures)) {
+            console.log('%cSCENE::Loaded', 'color: #000; background: #0f0;');
+            this.scene.start("Main");
         }
     }
 }
