@@ -55,6 +55,3 @@ this.addBitmapText('custom_name3', require('../font/custom_name3.png'), require(
 this.addAtlas('custom_name4',require('../img/filename4.png'),require('../img/filename4.json'))    
 ```
 
-
-### Use Yarn Plug'n'Play
-If you're using Yarn and want to use Plug'n'Play to get rid of the "node_modules" folder, type `yarn set version berry` to force a version update and then run `yarn install` to remove the extra stuff and build links.
