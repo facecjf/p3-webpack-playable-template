@@ -29,7 +29,7 @@ export default class PreloaderScene extends Phaser.Scene {
         Object.entries(textureFiles).forEach(([key, value]) => this.addTexture(key, value));
         
         // Add the game font
-        this.addBitmapText('gameFont', require('../font/gameFont_0.png'), require('../font/gameFont.xml'));
+        //this.addBitmapText('gameFont', require('../font/gameFont_0.png'), require('../font/gameFont.xml'));
 
         this.textures.on('onload', this.incrementDecodedTexture, this);
         this.sound.on('decoded', this.incrementDecodedAudio, this);
