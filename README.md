@@ -52,11 +52,11 @@ const textureFiles = {
     custom_name2: require('../img/custom_name2.png'),
 };
 const atlasFiles = {
-            gameAtlas: {
-                png: require('../img/filename4.png'),
-                json: require('../json/filename4.json')
-            }
-        };
+    gameAtlas: {
+        png: require('../img/filename4.png'),
+        json: require('../json/filename4.json')
+    }
+};
 this.addBitmapText('custom_name3', require('../font/custom_name3.png'), require('../font/custom_name3.xml'));
 ```
 
