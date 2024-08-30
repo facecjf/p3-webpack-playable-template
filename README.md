@@ -51,7 +51,12 @@ const audioFiles = {
 const textureFiles = {
     custom_name2: require('../img/custom_name2.png'),
 };
+const atlasFiles = {
+            gameAtlas: {
+                png: require('../img/filename4.png'),
+                json: require('../json/filename4.json')
+            }
+        };
 this.addBitmapText('custom_name3', require('../font/custom_name3.png'), require('../font/custom_name3.xml'));
-this.addAtlas('custom_name4',require('../img/filename4.png'),require('../img/filename4.json'))    
 ```
 
