@@ -9,6 +9,12 @@
 - All assets will automatically be base64 encoded and embedded in the project
 - Updated preloader methods for handling bitmap base64 encoded correctly
 - Modern code with inheritance classes, arrow functions, as well as asynchronous code, and all this will work even in older browsers thanks to the built-in BabelJS
+- Custom build.js Build script with ```bash node build.js ``` that targets designated Ad Networks
+- Localiztion support via ```bash languages.json ```
+
+### In The Works
+- Incorporate Languages in build script
+- Update build for correct output based on 'INDEX' template html files
 
 ### Requirements
 [Node.js](https://nodejs.org/) (with npm)
