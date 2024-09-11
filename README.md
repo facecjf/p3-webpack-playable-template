@@ -16,7 +16,7 @@
 ### Getting Started
 You need to either download this project or clone it:
 ```bash
-git clone https://github.com/vardanyanlg/phaser3-webpack-playable.git
+git clone https://github.com/facecjf/p3-webpack-playable-template.git
 ```
 Make sure you are in the project, if not then go there:
 ```bash
