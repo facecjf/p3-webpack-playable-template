@@ -57,8 +57,8 @@ const atlasFiles = {
 };
 this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
 const spritesheetFiles = {
-    stickerSprites: {
-        png: require('../img/stickerSheet.png'),
+    filename5Sprites: {
+        png: require('../img/filename5.png'),
         frameConfig: { frameWidth: 256, frameHeight: 250 }
     }
     // Add more spritesheets as needed
