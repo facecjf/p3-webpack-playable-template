@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="ad.orientation" content="portrait,landscape">
+    <title>Phaser3 Webpack Playable Ads</title>
+    <style type="text/css">
+		html,
+		body {
+			height: 100%;
+			margin: 0 !important;
+			padding: 0 !important;
+			background-color: #7720a8;
+		}
+		* {
+			height: 100vh; 
+			width: 100vw;
+			margin: 0 !important;
+			padding: 0 !important;
+			overflow: hidden;
+		}
+	</style>   
+	
+	<script>
+		function getScript(e,i){var t=document.createElement("script");t.type="text/javascript",t.async=!0,i&&(t.onload=i),t.src=e,document.head.appendChild(t)}function parseMessage(e){var i=e.data,t=i.indexOf(DOLLAR_PREFIX+RECEIVE_MSG_PREFIX);return -1!==t?getMessageParams(i.slice(t+2)):{}}function getMessageParams(e){var i,t=[],n=e.split("/"),a=n.length;if(-1===e.indexOf(RECEIVE_MSG_PREFIX)){if(a>=2&&a%2==0)for(i=0;a>i;i+=2)t[n[i]]=n.length<i+1?null:decodeURIComponent(n[i+1])}else{var s=e.split(RECEIVE_MSG_PREFIX);void 0!==s[1]&&(t=JSON&&JSON.parse(s[1]))}return t}function getDapi(e){var i=parseMessage(e);(!i||i.name===GET_DAPI_URL_MSG_NAME)&&getScript(i.data,onDapiReceived)}function invokeDapiListeners(){for(var e in dapiEventsPool)dapiEventsPool.hasOwnProperty(e)&&dapi.addEventListener(e,dapiEventsPool[e])}function onDapiReceived(){dapi=window.dapi,window.removeEventListener("message",getDapi),invokeDapiListeners()}function init(){window.dapi.isDemoDapi&&(window.parent.postMessage(DOLLAR_PREFIX+SEND_MSG_PREFIX+JSON.stringify({state:"getDapiUrl"}),"*"),window.addEventListener("message",getDapi,!1))}var DOLLAR_PREFIX="$$",RECEIVE_MSG_PREFIX="DAPI_SERVICE:",SEND_MSG_PREFIX="DAPI_AD:",GET_DAPI_URL_MSG_NAME="connection.getDapiUrl",dapiEventsPool={},dapi=window.dapi||{isReady:function(){return!1},addEventListener:function(e,i){dapiEventsPool[e]=i},removeEventListener:function(e){delete dapiEventsPool[e]},isDemoDapi:!0};init();
+		</script>
+		<script>
+		window.addEventListener("load", function(){
+			(dapi.isReady()) ? onReadyCallback() : dapi.addEventListener("ready", onReadyCallback); 
+		});
+		function onReadyCallback(){
+			//no need to listen to this event anymore
+			dapi.removeEventListener("ready", onReadyCallback);
+			let isAudioEnabled = !!dapi.getAudioVolume();
+			if(dapi.isViewable()){
+				adVisibleCallback({isViewable: true});
+			}
+			dapi.addEventListener("viewableChange", adVisibleCallback); //this event is used to know when the ad was visible/hidden
+			dapi.addEventListener("adResized", adResizeCallback); //this event is used recalculate ad UI items(mostly upon rotation)
+			dapi.addEventListener("audioVolumeChange", audioVolumeChangeCallback); //this event is used to get info about any volume state change
+		}
+		function adVisibleCallback(event){
+			console.log("isViewable " + event.isViewable);
+			if (event.isViewable){
+				screenSize = dapi.getScreenSize();
+			} else {
+				console.log("No View");
+			}
+		}
+		function adResizeCallback(event){
+			screenSize = event;
+			console.log("ad was resized width " + event.width + " height " + event.height);
+		}
+		// MUTE SOUND
+		function audioVolumeChangeCallback(volume){
+			let isAudioEnabled = !!volume;
+			if (isAudioEnabled){
+				muteGameSound();
+				console.log("Sound On");
+			} else {
+				muteGameSound();
+				console.log("Sound Off");
+			}
+		}
+	</script>
+</head>
+<body>
+
+<script>
+// ADD C3 CODE HERE
+
+</script>
+
+
+</body>
+</html>
