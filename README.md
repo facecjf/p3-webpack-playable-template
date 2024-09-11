@@ -20,7 +20,7 @@ git clone https://github.com/vardanyanlg/phaser3-webpack-playable.git
 ```
 Make sure you are in the project, if not then go there:
 ```bash
-cd phaser3-webpack-playable
+cd p3-webpack-playable-template
 ```
 Now you need to install all the necessary dependencies for the project to work:
 ```bash
@@ -56,5 +56,12 @@ const atlasFiles = {
     }
 };
 this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
+const spritesheetFiles = {
+    stickerSprites: {
+        png: require('../img/stickerSheet.png'),
+        frameConfig: { frameWidth: 256, frameHeight: 250 }
+    }
+    // Add more spritesheets as needed
+};
 ```
 
