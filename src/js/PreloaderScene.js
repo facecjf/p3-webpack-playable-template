@@ -9,20 +9,26 @@ export default class PreloaderScene extends Phaser.Scene {
         this.allAudio = 0;
         this.countDecodedTexture = 0;
         this.allTextures = 0;
+        this.countLoadedSpritesheets = 0;
+        this.allSpritesheets = 0;
     }
 
-    preload () {
+    preload() {
         console.log('%cSCENE::Preload', 'color: #fff; background: #ff1462;')
         const audioFiles = {
             sound_fx: require('../audio/sound_fx.mp3')
         };
         
         const textureFiles = {
-            bg: require('../img/bg.png'),
+            bg: require('../img/bg.jpg'),
+            ecbg: require('../img/ecbg.jpg'),
             logo: require('../img/logo.png'),
             cta: require('../img/cta_blank.png'),
             uihand: require('../img/ui_hand.png'),
-            button: require('../img/button.png')
+            button: require('../img/button.png'),
+            legal: require('../img/legal.png'),
+            disclaimer: require('../img/disclaimer.png'),
+            tutbg: require('../img/tutbg.png')
         };
 
         const atlasFiles = {
@@ -32,15 +38,29 @@ export default class PreloaderScene extends Phaser.Scene {
             // }
         };
 
+        const spritesheetFiles = {
+            // stickerSprites: {
+            //     png: require('../img/stickerSheet.png'),
+            //     frameConfig: { frameWidth: 256, frameHeight: 250 }
+            // }
+            // Add more spritesheets as needed
+        };
+
         Object.entries(audioFiles).forEach(([key, value]) => this.addAudio(key, value));
         Object.entries(textureFiles).forEach(([key, value]) => this.addTexture(key, value));
         Object.entries(atlasFiles).forEach(([key, {png, json}]) => this.addAtlas(key, png, json));
+        Object.entries(spritesheetFiles).forEach(([key, {png, frameConfig}]) => this.addSpritesheet(key, png, frameConfig));
         
         // Add the game font
-        //this.addBitmapText('gameFont', require('../font/gameFont_0.png'), require('../font/gameFont.xml'));
+        this.addBitmapText('gameFont', require('../font/templateFont_0.png'), require('../font/templateFont.xml'));
 
         this.textures.on('onload', this.incrementDecodedTexture, this);
         this.sound.on('decoded', this.incrementDecodedAudio, this);
+
+        // Load the language JSON file
+        this.load.json('languages', require('../data/languages.json'));
+
+        this.load.on('complete', this.onLoadComplete, this);
     }
     
     addBitmapText(key, vPNG, vXML) {
@@ -82,15 +102,32 @@ export default class PreloaderScene extends Phaser.Scene {
         return this;
     }
 
+    addSpritesheet(key, data, frameConfig) {
+        this.allSpritesheets++;
+        const pngUrl = this.createBase64Url(data, 'image/png');
+        this.load.spritesheet(key, pngUrl, frameConfig);
+        return this;
+    }
+
     incrementDecodedTexture = () => this.countDecodedTexture++;
     incrementDecodedAudio = () => this.countDecodedAudio++;
+    incrementDecodedSpritesheet = () => this.countDecodedSpritesheet++;
 
-    create() {
+    onLoadComplete() {
+        this.countLoadedSpritesheets = this.allSpritesheets;
         this.loadMain = true;
     }
 
+    create() {
+        this.loadMain = true;
+        this.load.on('filecomplete-spritesheet', this.incrementDecodedSpritesheet, this);
+    }
+
     update() {
-        if (this.loadMain && (this.countDecodedAudio >= this.allAudio) && (this.countDecodedTexture >= this.allTextures)) {
+        if (this.loadMain && 
+            (this.countDecodedAudio >= this.allAudio) && 
+            (this.countDecodedTexture >= this.allTextures) &&
+            (this.countLoadedSpritesheets >= this.allSpritesheets)) {
             console.log('%cSCENE::Loaded', 'color: #000; background: #0f0;');
             this.scene.start("Main");
         }

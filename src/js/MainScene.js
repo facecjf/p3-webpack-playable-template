@@ -1,434 +1,659 @@
 import Phaser from "phaser";
-
-// AD NETWORK SPECIFIC FUNCTIONS
-    // MINTEGRAL
-    // globalThis.gameStart = function () {
-    //    parent.postMessage("start","*");
-    //    console.log("game started");
-    //  } 
-    // globalThis.gameClose = function () {
-    //    parent.postMessage("complete","*");
-    //    console.log("game completed");
-    //  }
-    // window.gameReady && window.gameReady();
-
-    // APP LOVIN
-    // mraid.getState();
-
-    // IRONSOURCE
-	//dapi.isReady();
-	//dapi.getScreenSize();
-	//dapi.isViewable();
-	//dapi.getAudioVolume();
-
-    // globalThis.muteGameSound = function () {
-    //     scene.sound.setMute(true)
-    // }
-
-const items = [];
-const objectsArt = [];
-
-// Defines
-let uiHandTween
-let bg
-let overlay
-let inactivityEvent
-
-// Vars
-let orient = 0
-let startX
-let startY
-
-let inactiveTime = 6000 // 1000K = 1 sec
-let gameStep = 0
-let gamePhase = 0
-
-// Booleans
-let startGame = false
-let firstClick = false
-let gameOver = false
-let ctaClicked = false
-let button1Clicked = false
-let button2Clicked = false     
+import * as AdNetworkManager from './AdNetworkManager';
 
 export default class MainScene extends Phaser.Scene {
-    constructor () {
-        super({ key: 'Main' });
+    constructor() {
+        super({ key: 'Main' }); // Set the scene key
+        this.adNetworkManager = new AdNetworkManager.default(); // Initialize ad network manager
+        this.currentLanguage = 'en'; // Default language
+        this.timeRemaining = 5; // Initial time for the countdown timer
+        this.timerStarted = false; // Flag to check if timer has started
+        this.tutTextTween = null; // Tween for tutorial text animation
+        this.tutTextBaseScale = 1; // Base scale for tutorial text
+        this.button1Clicked = false; // Flag to track if button 1 was clicked
+        this.button2Clicked = false; // Flag to track if button 2 was clicked
     }
+
     create() {
-        const width_og = this.game.config.width
-        const height_og = this.game.config.height
-        const width = window.innerWidth
-        const height = window.innerHeight
-        const camera = this.cameras.main
-        const gameScale = this.game.scale
-        let scaleFactor = 0
-        if (height > width) {
-        scaleFactor = Math.min(width / 640, height / 1136);
-        } else if (height < width){
-        scaleFactor = Math.min(width / 1136, height / 640);
-        }
-
-	console.log('%cSTATE::Game', 'color: #fff; background: #ab24f8;');
-    
-    // CAMERA //
-    //camera.centerOn(width_og/2, height_og/2)
-    
-    // BG //
-    bg = this.add.image(width/2, height/2, "bg");
-    bg.setScale(1)
-    bg.setOrigin(0.5)
-    if(height > width) {
-        bg.setDisplaySize(height,height)
-      } else {
-        bg.setDisplaySize(width,width)
-      }
-    
-    // Create buttons
-    const createButton = (x, isButton1) => {
-        const button = this.add.image(x, height/2, 'button').setInteractive().setScale(scaleFactor);
+        console.log('%cSCENE::Main', 'color: #fff; background: #ab24f8;')
         
-        button.on('pointerdown', function () {
-            console.log(`click / ${isButton1 ? 'uiButton1' : 'uiButton2'} works`);
-            
-            if (isButton1) button1Clicked = true;
-            else button2Clicked = true;
-
-            if (!firstClick) firstClick = true;
-
-            // TWEEN
-            this.tweens.add({
-                targets: button,
-                scaleX: `-=${0.1 * scaleFactor}`,
-                scaleY: `-=${0.1 * scaleFactor}`,
-                ease: 'Sine.easeInOut',
-                duration: 200,
-                yoyo: true,
-                onComplete: () => {
-                    button.visible = false;
-                    if ((isButton1 && button2Clicked) || (!isButton1 && button1Clicked)) {
-                        gameOver = true;
-                        gameOverMan();
-                    }
+        // Load language data from cache
+        this.languageData = this.cache.json.get('languages');
+        
+        // Fallback language data if not loaded
+        if (!this.languageData) {
+            console.warn('Language data not loaded. Using fallback.');
+            this.languageData = {
+                en: {
+                    play_now: "PLAY NOW",
+                    // ... other fallback texts ...
                 }
-            });
-
-            removeTweens(this);
-            gameStep++;
-        }, this);
-
-        return button;
-    };
-
-    // UI BUTTON 1
-    const uiButton1 = createButton(bg.x - 120 * scaleFactor, true);
-
-    // UI BUTTON 2
-    const uiButton2 = createButton(bg.x + 120 * scaleFactor, false);
-
-    // LOGO //
-	const logo = this.add.image(0, 0, "logo");
-    logo.setOrigin(0,0.5)
-
-    // CTA //
-    const CTA = this.add.image(0, 0, "cta").setInteractive();
-      CTA.on("pointerdown", () => {
-            // function on CTA click prior to game end
-            if(gamePhase < 3) { 
-            gameOver = true
-            gameOverMan() 
-            gamePhase = 3
-            }
-      })
-    CTA.setScale(1*scaleFactor)
-    CTA.setOrigin(1,0.5)
-   
-    // CTA tween
-    const CTATween = this.tweens.add({targets: CTA, scaleX: '-=.1*scaleFactor', scaleY: '-=.1*scaleFactor', ease: 'Sine.easeInOut', duration: 450, delay: 0, repeat: -1, paused: true, yoyo: true})
-    // CTATween.play()
-
-    // CTA TEXT //
-    // const ctaText = this.add.text(0, 0, "PLAY NOW", {
-    //     fontFamily: "Arial Black",
-    //     fontSize: 32*scaleFactor,
-    //     color: "#ffffff",
-    //     stroke: "#000000",
-    //     strokeThickness: 6*scaleFactor,
-    //     align: "center",
-    //   })
-    // ctaText.setOrigin(0.5);
-    
-    // const ctaTextTween = this.tweens.add({targets: ctaText, scaleX: '-=.1', scaleY: '-=.1', ease: 'Sine.easeInOut', duration: 450, delay: 0, repeat: -1, paused: false, yoyo: true})
-    // ctaTextTween.play()
-
-    // UI HAND (create assets)
-    const uiHand = this.add.image(startX, startY, 'uihand').setDepth(20)
-    uiHand.setScale(1*scaleFactor)
-
-    // UI HAND / TUTORIAL (on start)
-    uiHandTween = this.tweens.add({targets: uiHand, x: uiButton1.x, y: uiButton1.y, ease: 'Sine.easeInOut', duration: 500, delay: 0, repeat: -1, paused: false, yoyo: true})
-    uiHandTween.play(this)
-    UIhandHelper(uiButton1.x + 120, uiButton1.y + 100, -395)
-    
-    // ON CLICK (ANY) INTERACTION
-    this.input.on('pointerdown', function () {
-        // Check first click
-        if (gameOver && gamePhase > 2) {
-            if(!ctaClicked) {
-                ctaClicked = true
-                clickCTA()
-            } 
-        } else if (!firstClick && !gameOver) {
-            firstClick = true
-            console.log('first click!')
-            removeTweens(this)
-            // reset ui hand
-            this.time.removeEvent(inactivityEvent)
-            inactivityEvent = this.time.addEvent({ delay: inactiveTime, callback: inactivityTimer, callbackScope: this })
-        } else {
-            // reset ui hand
-            console.log('click / ui hand reset works!')
-            removeTweens(this)
-            this.time.removeEvent(inactivityEvent)
-            inactivityEvent = this.time.addEvent({ delay: inactiveTime, callback: inactivityTimer, callbackScope: this })
+            };
         }
-    }, this)
-    // Add overlay for End Card
-    const overlay = this.add.graphics()
-
-    // Call Asset Placement on start //
-    initAssets(this);
-
-    // MINTEGRAL
-    // gameStart(this);
-
-    // HANDLERS & FUNCTIONS ///////////////////////////////////////////////////////////////////////////////////////
-    // ORIENTATION CHANGE HANDLER //
-    
-    gameScale.on('orientationchange', (Orientation)=> {
-      if (Orientation === Phaser.Scale.PORTRAIT) 
-      {   
-        orient = 0
-        console.log('resize port')
-      } 
-      else if (Orientation === Phaser.Scale.LANDSCAPE) 
-      {
-        orient = 1
-        console.log('resize land')
-      }
-      // reset ui hand
-      //removeTweens(this)
-      console.log(orient);
-      // this.scene.restart();
-    },this)
-
-    // RESIZE LISTENER //
-    window.addEventListener("resize", () => {
-      // dimension update
-      removeTweens(this)
-      let nWidth = window.innerWidth
-      let nHeight = window.innerHeight
-      gameScale.resize(nWidth, nHeight)
-      updateAssets()
-      this.time.removeEvent(inactivityEvent)
-      inactivityEvent = this.time.addEvent({ delay: 500, callback: inactivityTimer, callbackScope: this })
-    },true);
-
-    // FUNCTIONS ///////////////////////////////////////////////////////////////////////////////////////
-    // CTA CLICKED FUNCTION //
-    globalThis.clickCTA = function() {
-        console.log('CTA Clicked')
-        // GOOGLE (dcm & adwords) ~USE THIS
-        //window.open(window.globalThis.clickTag);
-
-        // GOOGLE (adwords)
-        //ExitApi.exit();
-
-        // IRONSOURCE
-        //dapi.openStoreUrl();
-
-        // FACEBOOK / MOLOCO / TENCENT
-        //FbPlayableAd.onCTAClick();
-
-        // APPLOVIN / LIFTOFF / ADCOLONY / CHARTBOOST
-        //mraid.open();
-
-        // TIKTOK
-        //window.openAppStore();
-
-        // UNITY
-        //mraid.open(url);
-
-        // MINTEGRAL
-        // gameClose(this);
-        // window.install && window.install();
-
-        // APPLOVIN / LIFTOFF / ADCOLONY / CHARTBOOST
-        //mraid.open();
-
-        // VUNGLE
-        // ctaButton.onclick = function(){
-        //     parent.postMessage('download','*');
-        // };
-    }
-
-    // End game Ad network specific functions
-    globalThis.endGameAd = function() {
-        console.log('End Ad')
-        // VUNGLE 
-        // function gameCompleted() {
-        //     parent.postMessage('complete','*');
-        //     console.log('Ad experience has completed');
-        // };
-        // MINTEGRAL
-        // window.gameEnd && window.gameEnd();
-    }
-
-    // game over function
-    function gameOverMan () {
-        uiHand.visible = false
-        uiButton1.visible = false
-        uiButton2.visible = false
         
-        endModual() // EM
-        removeTweens()
-        //tutMsg.visible = false
-        if (!firstClick) {
-            gamePhase = gamePhase + 1
-            firstClick = true
+        // Initialize game components
+        this.initializeResponsiveDesign();
+        this.initializeGameVariables();
+        this.createGameObjects();
+        this.setupEventListeners();
+        this.createUIHand();
+
+        // Listen for orientation changes
+        this.scale.on('orientationchange', (orientation) => {
+            this.resize();
+        });
+
+        // Notify ad network that game ad is loaded
+        this.adNetworkManager.loadedGameAd();
+    }
+
+    initializeResponsiveDesign() {
+        // Set up responsive design variables
+        this.gameWidth = this.scale.gameSize.width;
+        this.gameHeight = this.scale.gameSize.height;
+        this.centerX = this.gameWidth / 2;
+        this.centerY = this.gameHeight / 2;
+        
+        // Determine if the game is in portrait mode (including square viewports)
+        this.isPortrait = this.gameHeight >= this.gameWidth;
+        
+        // Calculate scaling factor based on orientation
+        if (this.isPortrait) {
+            this.scaleFactor = this.gameWidth / 640;
         } else {
-            gamePhase = gamePhase
+            this.scaleFactor = this.gameHeight / 640;
         }
-        console.log(gamePhase)
     }
 
-    // ui hand helper : (set start POS & tween direction with parameters)
-    function UIhandHelper (startX, startY, handRot) {
-      uiHand.x = startX
-      uiHand.y = startY
-      uiHand.setAngle(handRot)
-      uiHand.alpha = 1
+    initializeGameVariables() {
+        // Initialize various game state variables
+        this.gameStep = 0;
+        this.gamePhase = 0;
+        this.startGame = false;
+        this.firstClick = false;
+        this.gameOver = false;
+        this.ctaClicked = false;
+        this.inactiveTime = 6000;
+        this.logoScale = 0.45
+        this.ctaScale = 0.45
+        this.handAngle = 0
+        this.handAngleOpo = 0
     }
 
-    // tutorial / inactivity helper : removes ui hand
-    function removeTweens() {
-        uiHand.alpha = 0
-        uiHandTween.remove()
+    createGameObjects() {
+        // Create and position game objects (background, logo, CTA, etc.)
+        // Background
+        this.bg = this.add.image(this.centerX, this.centerY, "bg");
+        this.ecbg = this.add.image(this.centerX, this.centerY, "ecbg");
+        this.ecbg.visible = false;
+        this.resizeBackground();
+
+        // Logo and CTA
+        const topElementsY = 90 * this.scaleFactor;
+        this.logo = this.add.image(20, topElementsY, "logo")
+            .setScale(this.logoScale * this.scaleFactor)
+            .setOrigin(0, 0.5);
+
+        this.CTA = this.add.image(this.gameWidth - 20, topElementsY, "cta")
+            .setInteractive()
+            .setScale(this.ctaScale * this.scaleFactor)
+            .setOrigin(1, 0.5);
+
+        // Add CTA text
+        this.ctaText = this.add.bitmapText(this.CTA.x, this.CTA.y, 'gameFont', this.getLocalizedText('play_now'), 72)
+            .setOrigin(0.5)
+            .setTint(0xFFFFFF)
+            .setDepth(21);
+
+        // Immediately update CTA text position and scale
+        this.updateCTATextPosition();
+
+        // Tutorial BG
+        const tutBGY = this.isPortrait ? 
+            topElementsY + 100 * this.scaleFactor : 
+            topElementsY;
+        this.tutBG = this.add.image(this.centerX, tutBGY, "tutbg")
+            .setDepth(10)
+            .setScale(this.scaleFactor);
+        
+        // Add bitmap text to tutBG
+        this.tutText = this.add.bitmapText(this.tutBG.x, this.tutBG.y, 'gameFont', this.getLocalizedText('game_tut'), 42)
+            .setDepth(11)
+            .setOrigin(0.5)
+            .setTint(0xFFFFFF);
+
+        this.tutTextBaseScale = this.scaleFactor; // Set the base scale
+        this.tutText.setScale(this.tutTextBaseScale);
+
+        // Buttons
+        const buttonSpacing = 240 * this.scaleFactor;
+        this.uiButton1 = this.add.image(this.centerX - buttonSpacing / 2, this.centerY, 'button')
+            .setInteractive()
+            .setScale(this.scaleFactor);
+        this.uiButton2 = this.add.image(this.centerX + buttonSpacing / 2, this.centerY, 'button')
+            .setInteractive()
+            .setScale(this.scaleFactor);
+
+        // Legal
+        this.legal = this.add.image(this.centerX, this.gameHeight - 35 * this.scaleFactor, "legal");
+        // Disclaimer
+        this.disclaimer = this.add.image(this.centerX, this.gameHeight - 20 * this.scaleFactor, "disclaimer");
+
+        // Overlay for End Card
+        this.overlay = this.add.graphics();
+
+        this.startTutTextTween();
     }
 
-    // inactivity function (ui hand / tutorial msgs)
-    function inactivityTimer() {
-      let cameraWidth = width
-      if (gameOver) {
-          this.time.removeEvent(inactivityEvent)
-      } else {
-          //console.log("inactive: Trigger!")
-          // position hand based on button choice interaction 
-          if(button1Clicked) {
-              uiHandTween = this.tweens.add({targets: uiHand, x: uiButton2.x, y: uiButton2.y, ease: 'Sine.easeInOut', duration: 500, delay: 0, repeat: -1, paused: false, yoyo: true})
-              uiHandTween.play()
-              UIhandHelper(uiButton2.x - 120, uiButton2.y + 100, 395)
-          } else {
-              uiHandTween = this.tweens.add({targets: uiHand, x: uiButton1.x, y: uiButton1.y, ease: 'Sine.easeInOut', duration: 500, delay: 0, repeat: -1, paused: false, yoyo: true})
-              uiHandTween.play()
-              UIhandHelper(uiButton1.x + 120, uiButton1.y + 100, -395)
-          }
-      }
-    } 
-    
-    // Initial asset placement //
-    function initAssets() {
-      // PORT
-      gameScale.setGameSize(width, height) 
-      logo.setPosition(20, 90*scaleFactor)
-      logo.setScale(0.6*scaleFactor)
-      CTA.setPosition(width - 20, 90*scaleFactor)
-      CTA.setScale(0.75*scaleFactor)
-      uiHand.setScale(1*scaleFactor)
-      bg.setPosition(width/2, height/2)
-      bg.setOrigin(0.5)
-      if(height > width) {
-        bg.setDisplaySize(height,height)
-      } else {
-        bg.setDisplaySize(width,width)
-      }
-      uiButton1.setPosition(bg.x - 120*scaleFactor, height/2)
-      uiButton2.setPosition(bg.x + 120*scaleFactor, height/2)
-      gameScale.refresh()
-      //console.log("portStart")
+    startTutTextTween() {
+        // Start the tutorial text tween animation
+        this.tutTextTween = this.tweens.add({
+            targets: this.tutText,
+            scaleX: this.tutTextBaseScale * 1.1,
+            scaleY: this.tutTextBaseScale * 1.1,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
     }
 
-    // Update asset placement on resize/orientation change //
-    function updateAssets() {
-        // dimension update
-        let nWidth = window.innerWidth
-        let nHeight = window.innerHeight
-        //assets
-        gameScale.setGameSize(nWidth, nHeight) 
-        logo.setPosition(20, 90*scaleFactor)
-        logo.setScale(0.6*scaleFactor)
-        CTA.setPosition(nWidth - 20, 90*scaleFactor)
-        CTA.setScale(0.75*scaleFactor)
-        uiHand.setScale(1*scaleFactor)
-        bg.setPosition(nWidth/2, nHeight/2)
-        bg.setOrigin(0.5)
-        if(nHeight > nWidth) {
-            bg.setDisplaySize(nHeight,nHeight)
-          } else {
-            bg.setDisplaySize(nWidth,nWidth)
-          }
-        uiButton1.setPosition(bg.x - 120*scaleFactor, nHeight/2)
-        uiButton2.setPosition(bg.x + 120*scaleFactor, nHeight/2)
-        //camera
-        camera.setViewport(0,0,nWidth,nHeight)
-        camera.setSize(nWidth, nHeight)
-        camera.centerOn(nWidth/2, nHeight/2)
-        gameScale.refresh()
-        //console.log("refresh")
-    }
-
-    // end modual function
-    function endModual () {
-        let nWidth = window.innerWidth
-        let nHeight = window.innerHeight
-        // OVERLAY
-        overlay.fillStyle(0x000000, 0.5).setDepth(15).fillRect(0, 0, 1136*2, 1136*2)
-        // EM CTA placement
-        logo.setOrigin(0.5)
-        logo.setPosition(nWidth/2, 200*scaleFactor)
-        logo.setDepth(20)
-        CTA.setDepth(20)
-        CTA.setOrigin(0.5)
-        CTA.setPosition(nWidth/2, (nHeight - 200*scaleFactor))
-        CTATween.resume()
-        CTATween.timeScale += 1
-    }
-  } // End Create
-  // UPDATE : GAME STATE ///////////////////////////////////////////////////////////////
-  update () {
-    let startGame = false
-    if (gamePhase == 0 && !gameOver) {
-        console.log('Phase 1 Tutorial')
-        gamePhase++
-    } else if (gamePhase == 1 && !gameOver) { // Tutorial Phase ie:1
-        if (firstClick) {
-            console.log('Phase 2 Start')
-            startGame = true
-            gamePhase++
-        } 
-    } else if (gamePhase == 2 && gameOver) { // Game Phase ie:2
-            console.log('Phase 3 Game Over EM')
-            endGameAd(this)
-            gamePhase++
-    } else if (gamePhase == 3 && gameOver) { // End Modal Phase ie:3
-        if (ctaClicked) {
-            console.log('Phase 4 Return Modual')
-            //returnModual() // call RM
-            gamePhase++
+    stopTutTextTween() {
+        // Stop the tutorial text tween animation
+        if (this.tutTextTween) {
+            this.tutTextTween.stop();
+            this.tutTextTween = null;
+            this.tutText.setScale(this.tutTextBaseScale);
         }
-    } else { // Return Modal Phase ie:4
-        //console.log('Return Modual')
     }
-  } 
-  // END UPDATE ////////////////////////////////////////////////////////////////////// 
+
+    createUIHand() {
+        // Create and set up the UI hand for guiding user interactions
+        const handOffset = 120 * this.scaleFactor;
+        const x = this.uiButton1.x + handOffset;
+        const y = this.uiButton1.y + handOffset;
+        
+        const uiHand = this.add.image(x, y, 'uihand').setDepth(20).setScale(this.scaleFactor);
+        let currentTween = null;
+        let targetButton = this.uiButton1;
+        let currentAngle = this.handAngle;
+
+        const createTween = () => {
+            if (currentTween) currentTween.stop();
+            currentTween = this.tweens.add({
+                targets: uiHand,
+                x: targetButton.x,
+                y: targetButton.y,
+                ease: 'Sine.easeInOut',
+                duration: 500,
+                repeat: -1,
+                yoyo: true
+            });
+        };
+
+        const setPosition = (x, y, angle, newTargetButton) => {
+            uiHand.setPosition(x, y).setAngle(angle).setAlpha(1);
+            if (newTargetButton) targetButton = newTargetButton;
+            currentAngle = angle;
+            createTween();
+        };
+
+        const hide = () => {
+            uiHand.setAlpha(0);
+            if (currentTween) currentTween.stop();
+        };
+
+        const show = () => {
+            uiHand.setAlpha(1);
+            createTween();
+        };
+
+        const stopTween = () => {
+            if (currentTween) currentTween.stop();
+        };
+
+        const resize = (newScale) => {
+            uiHand.setScale(newScale);
+        };
+
+        const getCurrentState = () => {
+            return { targetButton, currentAngle };
+        };
+
+        createTween();
+
+        this.uiHandController = { uiHand, setPosition, hide, show, stopTween, resize, getCurrentState };
+        
+        this.updateUIHandPosition();
+    }
+
+    updateUIHandPosition() {
+        // Check if we're in the end module state
+        if (this.gameOver && this.gamePhase >= 3) {
+            // Ensure the UI hand is hidden during the end module
+            if (this.uiHandController) {
+                this.uiHandController.hide();
+            }
+            return; // Exit the method early
+        }
+
+        // Regular game UI hand positioning
+        if (this.uiHandController) {
+            const { targetButton, currentAngle } = this.uiHandController.getCurrentState();
+            const handOffset = 120 * this.scaleFactor;
+            let x, y;
+
+            if (targetButton === this.uiButton1) {
+                x = this.uiButton1.x + handOffset;
+                y = this.uiButton1.y + handOffset;
+            } else {
+                x = this.uiButton2.x - handOffset;
+                y = this.uiButton2.y + handOffset;
+            }
+
+            this.uiHandController.setPosition(x, y, currentAngle, targetButton);
+            this.uiHandController.resize(1 * this.scaleFactor);
+
+            // Only show and start tween if we're not in the end module
+            if (!this.gameOver) {
+                this.uiHandController.show();
+            }
+        }
+    }
+
+    setupEventListeners() {
+        // Set up event listeners for user interactions
+        this.scale.on('resize', this.resize, this);
+        window.addEventListener('resize', () => this.resize());
+        
+        this.uiButton1.on('pointerdown', () => this.clickButton(this.uiButton1, true));
+        this.uiButton2.on('pointerdown', () => this.clickButton(this.uiButton2, false));
+
+        this.input.on('pointerdown', this.handleGlobalClick, this);
+        this.CTA.on('pointerdown', this.handleCTAClick, this);
+    }
+
+    resize() {
+        // Handle game resize events
+        this.initializeResponsiveDesign();
+        this.resizeBackground();
+        this.repositionGameObjects();
+        this.updateUIHandPosition();
+    }
+
+    resizeBackground() {
+        // Resize background images based on orientation
+        if (this.isPortrait) {
+            this.bg.setDisplaySize(this.gameHeight, this.gameHeight);
+            this.ecbg.setDisplaySize(this.gameHeight, this.gameHeight);
+        } else {
+            this.bg.setDisplaySize(this.gameWidth, this.gameWidth);
+            this.ecbg.setDisplaySize(this.gameWidth, this.gameWidth);
+        }
+    }
+
+    repositionGameObjects() {
+        // Reposition game objects after resize
+        this.bg.setPosition(this.centerX, this.centerY);
+        this.ecbg.setPosition(this.centerX, this.centerY);
+        
+        if (this.gameOver && this.gamePhase >= 3) {
+            // End module layout
+            this.repositionEndModuleAssets();
+        } else {
+            // Regular game layout
+            this.repositionRegularGameAssets();
+        }
+
+        // Common elements
+        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor);
+        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor);
+        
+        // Move this line to the end of the method
+        if (!this.gameOver || this.gamePhase < 3) {
+            this.updateUIHandPosition();
+        }
+    }
+
+    repositionEndModuleAssets() {
+        // Reposition assets for end module
+        this.logo.setPosition(this.centerX, 200 * this.scaleFactor);
+        this.logo.setScale(1 * this.scaleFactor);
+
+        this.CTA.setPosition(this.centerX, (this.gameHeight - 200 * this.scaleFactor));
+        this.CTA.setScale(0.85 * this.scaleFactor);
+
+        this.updateCTATextPosition();
+
+        // Resize overlay
+        this.overlay.clear();
+        this.overlay.fillStyle(0x000000, 0.5).setDepth(15).fillRect(0, 0, this.gameWidth, this.gameHeight);
+
+        // Ensure these elements remain hidden
+        this.tutBG.setVisible(false);
+        this.tutText.setVisible(false);
+        //this.timerBG.setVisible(false);
+        //this.timerText.setVisible(false);
+    }
+
+    repositionRegularGameAssets() {
+        // Regular game layout positioning
+        const topElementsY = 90 * this.scaleFactor;
+
+        this.logo.setPosition(20, topElementsY);
+        this.logo.setScale(this.logoScale * this.scaleFactor);
+        
+        this.CTA.setPosition(this.gameWidth - 20, topElementsY);
+        this.CTA.setScale(this.ctaScale * this.scaleFactor);
+        this.updateCTATextPosition();
+
+        const tutBGY = this.isPortrait ? 
+            topElementsY + 100 * this.scaleFactor : 
+            topElementsY;
+        this.tutBG.setPosition(this.centerX, tutBGY).setScale(this.scaleFactor);
+        
+        this.tutTextBaseScale = this.scaleFactor;
+        this.tutText.setPosition(this.tutBG.x, this.tutBG.y);
+        
+        if (this.tutTextTween && this.tutTextTween.isPlaying()) {
+            this.stopTutTextTween();
+            this.startTutTextTween();
+        } else {
+            this.tutText.setScale(this.tutTextBaseScale);
+        }
+
+        const buttonSpacing = 240 * this.scaleFactor;
+        this.uiButton1.setPosition(this.centerX - buttonSpacing / 2, this.centerY).setScale(this.scaleFactor);
+        this.uiButton2.setPosition(this.centerX + buttonSpacing / 2, this.centerY).setScale(this.scaleFactor);
+    }
+
+    updateCTATextPosition() {
+        // Update CTA text position and scale
+        if (this.ctaText && this.CTA) {
+            const ctaCenterX = this.CTA.x - (this.CTA.displayWidth * (-0.5 + this.CTA.originX));
+            this.ctaText.setPosition(ctaCenterX, this.CTA.y);
+            this.ctaText.setScale(this.CTA.scale * 0.8);
+        }
+    }
+
+    handleCTAClick() {
+        // Handle CTA button click
+        if (!this.ctaClicked && !this.gameOver) {
+            this.ctaClicked = true;
+            this.clickCTA();
+        }
+    }
+
+    clickCTA() {
+        // Actions to perform when CTA is clicked
+        this.adNetworkManager.clickCTA();
+        // Add any additional CTA click logic here
+        if (this.gamePhase < 3) {
+            this.gameOver = true;
+            this.gameOverMan();
+            this.gamePhase = 3;
+        }
+    }
+
+    clickButton(button, isButton1) {
+        // Handle button click events
+        if ((isButton1 && this.button1Clicked) || (!isButton1 && this.button2Clicked)) {
+            return; // Exit if the button has already been clicked
+        }
+
+        console.log(`click / ${isButton1 ? 'uiButton1' : 'uiButton2'} works`);
+        
+        if (isButton1) this.button1Clicked = true;
+        else this.button2Clicked = true;
+
+        if (!this.firstClick) this.firstClick = true;
+
+        this.tweens.add({
+            targets: button,
+            scaleX: `-=${0.1 * this.scaleFactor}`,
+            scaleY: `-=${0.1 * this.scaleFactor}`,
+            ease: 'Sine.easeInOut',
+            duration: 200,
+            yoyo: true,
+            onComplete: () => {
+                button.visible = false;
+                if ((isButton1 && this.button2Clicked) || (!isButton1 && this.button1Clicked)) {
+                    this.gameOver = true;
+                    this.gameOverMan();
+                } else {
+                    // Update UI hand position for the other button
+                    const newTargetButton = isButton1 ? this.uiButton2 : this.uiButton1;
+                    const handOffset = 120 * this.scaleFactor;
+                    const x = isButton1 ? newTargetButton.x - handOffset : newTargetButton.x + handOffset;
+                    const y = newTargetButton.y + handOffset;
+                    const angle = isButton1 ? this.handAngleOpo : this.handAngle;
+                    this.uiHandController.setPosition(x, y, angle, newTargetButton);
+                }
+            }
+        });
+
+        this.removeTweens();
+        this.gameStep++;
+    }
+
+    removeTweens() {
+        // Remove UI hand tweens
+        if (this.uiHandController) {
+            this.uiHandController.hide();
+            this.uiHandController.stopTween();
+        }
+    }
+
+    inactivityTimer() {
+        // Handle inactivity
+        if (this.gameOver) {
+            this.time.removeEvent(this.inactivityEvent);
+        } else {
+            if (this.button1Clicked) {
+                this.uiHandController.setPosition(this.uiButton2.x - 120, this.uiButton2.y + 100, 395, this.uiButton2);
+            } else {
+                this.uiHandController.setPosition(this.uiButton1.x + 120, this.uiButton1.y + 100, -395, this.uiButton1);
+            }
+        }
+    }
+
+    handleGlobalClick() {
+        // Handle global click events
+        if (this.gameOver && this.gamePhase > 2) {
+            if (!this.ctaClicked) {
+                this.ctaClicked = true;
+                this.clickCTA();
+            }
+        } else if (!this.firstClick && !this.gameOver) {
+            this.firstClick = true;
+            console.log('first click!');
+            this.removeTweens();
+            this.resetInactivityTimer();
+            //this.startTimer();
+            this.stopTutTextTween();
+        } else {
+            console.log('click / ui hand reset works!');
+            this.removeTweens();
+            this.resetInactivityTimer();
+        }
+    }
+
+    resetInactivityTimer() {
+        // Reset the inactivity timer
+        this.time.removeEvent(this.inactivityEvent);
+        this.inactivityEvent = this.time.addEvent({ delay: this.inactiveTime, callback: this.inactivityTimer, callbackScope: this });
+    }
+
+    gameOverMan() {
+        // Handle game over state
+        if (this.uiHandController) {
+            this.uiHandController.hide();
+            this.uiHandController.stopTween();
+        }
+        this.uiButton1.visible = false;
+        this.uiButton2.visible = false;
+        
+        this.endModual();
+        this.removeTweens();
+        
+        if (!this.firstClick) {
+            this.gamePhase++;
+            this.firstClick = true;
+        }
+        console.log(this.gamePhase);
+
+        // Start the CTA tween when the game ends
+        this.setupCTATween();
+
+        // Remove interactivity from CTA
+        this.CTA.removeInteractive();
+    }
+
+    endModual() {
+        // Set up end module display
+        this.overlay.fillStyle(0x000000, 0.5).setDepth(15).fillRect(0, 0, this.gameWidth, this.gameHeight);
+        this.bg.visible = false;
+        this.ecbg.visible = true;
+
+        this.logo.setOrigin(0.5);
+        this.logo.setDepth(20);
+        
+        this.CTA.setDepth(20);
+        this.CTA.setOrigin(0.5);
+        
+        this.repositionEndModuleAssets();
+
+        // Hide tutorial and timer elements
+        this.tutBG.setVisible(false);
+        this.tutText.setVisible(false);
+    }
+
+    endGameAd() {
+        console.log('End Ad')
+        this.adNetworkManager.endGameAd();
+    }
+
+    startGameAd() {
+        console.log('Start Ad')
+        this.adNetworkManager.startGameAd();
+    }
+
+    setupCTATween() {
+        // Set up CTA button tween animation
+        // Stop any existing tween
+        if (this.ctaTween) {
+            this.ctaTween.stop();
+        }
+
+        // Create a new tween
+        this.ctaTween = this.tweens.add({
+            targets: this.CTA,
+            scaleX: this.CTA.scaleX * 1.1,
+            scaleY: this.CTA.scaleY * 1.1,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            onUpdate: () => {
+                this.updateCTATextPosition();
+            }
+        });
+    }
+
+    update() {
+        // Game update loop
+        if (this.gamePhase == 0 && !this.gameOver) {
+            console.log('Phase 1 Tutorial');
+            this.gamePhase++;
+        } else if (this.gamePhase == 1 && !this.gameOver) {
+            if (this.firstClick) {
+                console.log('Phase 2 Start');
+                this.startGame = true;
+                this.gamePhase++;
+            }
+        } else if (this.gamePhase == 2 && this.gameOver) {
+            console.log('Phase 3 Game Over EM');
+            this.endGameAd();
+            this.gamePhase++;
+        } else if (this.gamePhase == 3 && this.gameOver) {
+            if (this.ctaClicked) {
+                console.log('Phase 4 Return Modual');
+                this.gamePhase++;
+            }
+        }
+    }
+
+    getLocalizedText(key) {
+        // Get localized text based on current language
+        if (this.languageData && this.languageData[this.currentLanguage] && this.languageData[this.currentLanguage][key]) {
+            return this.languageData[this.currentLanguage][key];
+        }
+        return key; // Fallback to key if translation not found
+    }
+
+    setLanguage(languageCode) {
+        // Set the current language
+        if (this.languageData[languageCode]) {
+            this.currentLanguage = languageCode;
+            this.updateAllText();
+        } else {
+            console.warn(`Language ${languageCode} not found in language data.`);
+        }
+    }
+
+    updateAllText() {
+        // Update all text elements with new language
+        if (this.ctaText) {
+            this.ctaText.setText(this.getLocalizedText('play_now'));
+            this.updateCTATextPosition();
+        }
+        // Update other text elements as needed
+    }
+
+    transitionEnd() {
+        // Handle end of game transition
+        // Stop any ongoing game logic
+        this.gameOver = true;
+        this.removeTweens();
+
+        // Hide tutorial and timer elements
+        this.tutBG.setVisible(false);
+        this.tutText.setVisible(false);
+
+        // Display "Time's Up!" text
+        const timesUpText = this.add.bitmapText(this.centerX, this.centerY, 'gameFont', this.getLocalizedText('TIME\'S UP!'), 64)
+            .setOrigin(0.5)
+            .setTint(0xFFFFFF)
+            .setAlpha(0);
+
+        // Fade in the "Time's Up!" text
+        this.tweens.add({
+            targets: timesUpText,
+            alpha: 1,
+            duration: 500,
+            ease: 'Power2',
+            onComplete: () => {
+                // Wait for 2 seconds, then transition to endModual
+                this.time.delayedCall(2000, () => {
+                    timesUpText.destroy();
+                    this.gameOverMan();
+                });
+            }
+        });
+    }
 }
+
+// Global functions
+window.gameStart = function() {
+    parent.postMessage("start", "*");
+    console.log("game started");
+};
+
+window.gameClose = function() {
+    parent.postMessage("complete", "*");
+    console.log("game completed");
+};
+
+window.muteGameSound = function(scene) {
+    scene.sound.setMute(true);
+};
