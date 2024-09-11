@@ -7,10 +7,10 @@ const gameConfig = {
     parent: 'gameContainer',
     backgroundColor: '#000000',
     scale: {
-        mode: Phaser.Scale.FIT,
-        width: window.innerWidth,
-        height: window.innerHeight,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+         mode: Phaser.Scale.RESIZE,
+        parent: 'phaser-example',
+        width: '100%',
+        height: '100%'
     },
     scene: null
 };
