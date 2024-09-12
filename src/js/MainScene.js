@@ -589,7 +589,7 @@ export default class MainScene extends Phaser.Scene {
         if (this.gamePhase == 0 && !this.gameOver) {
             console.log('Phase 1 Tutorial');
             // Notify ad network that game ad is starting
-            this.adNetworkManager.startGameAd();
+            this.startGameAd();
             this.gamePhase++;
         } else if (this.gamePhase == 1 && !this.gameOver) {
             if (this.firstClick) {
