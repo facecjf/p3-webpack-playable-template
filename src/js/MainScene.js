@@ -404,6 +404,7 @@ export default class MainScene extends Phaser.Scene {
         // Handle CTA button click
         if (!this.ctaClicked && !this.gameOver) {
             this.ctaClicked = true;
+            this.endGameAd();
             this.clickCTA();
         }
     }
@@ -553,12 +554,10 @@ export default class MainScene extends Phaser.Scene {
     }
 
     endGameAd() {
-        console.log('End Ad')
         this.adNetworkManager.endGameAd();
     }
 
     startGameAd() {
-        console.log('Start Ad')
         this.adNetworkManager.startGameAd();
     }
 
