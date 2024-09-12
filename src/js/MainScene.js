@@ -57,11 +57,35 @@ export default class MainScene extends Phaser.Scene {
         // Determine if the game is in portrait mode (including square viewports)
         this.isPortrait = this.gameHeight >= this.gameWidth;
         
-        // Calculate scaling factor based on orientation
-        if (this.isPortrait) {
-            this.scaleFactor = this.gameWidth / 640;
+        // Determine device type
+        this.deviceType = this.getDeviceType();
+        
+        // Base scale calculation
+        const baseScaleX = this.gameWidth / 639;
+        const baseScaleY = this.gameHeight / 639;
+        
+        // Calculate scaling factor based on device type and orientation
+        if (this.deviceType === 'phone') {
+            this.scaleFactor = this.isPortrait ? baseScaleX : baseScaleY;
+        } else if (this.deviceType === 'tablet') {
+            // For tablets, use a more conservative scaling factor
+            this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.8; // 80% of the smaller scale
+        } else { // square
+            this.scaleFactor = Math.min(baseScaleX, baseScaleY);
+        }
+        
+        // Limit the scale factor to prevent overly large assets
+        this.scaleFactor = Math.min(this.scaleFactor, 1);
+    }
+
+    getDeviceType() {
+        const aspectRatio = this.gameWidth / this.gameHeight;
+        if (Math.abs(aspectRatio - 1) < 0.1) {
+            return 'square';
+        } else if (this.gameWidth >= 1080 || this.gameHeight >= 1080) {
+            return 'tablet';
         } else {
-            this.scaleFactor = this.gameHeight / 640;
+            return 'phone';
         }
     }
 
