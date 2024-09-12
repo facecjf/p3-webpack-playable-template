@@ -75,7 +75,7 @@ export default class MainScene extends Phaser.Scene {
         }
         
         // Limit the scale factor to prevent overly large assets
-        this.scaleFactor = Math.min(this.scaleFactor, 1);
+        this.scaleFactor = Math.min(this.scaleFactor, 1.15);
     }
 
     getDeviceType() {
