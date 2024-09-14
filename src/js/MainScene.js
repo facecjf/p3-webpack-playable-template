@@ -100,8 +100,8 @@ export default class MainScene extends Phaser.Scene {
         this.inactiveTime = 6000;
         this.logoScale = 0.45
         this.ctaScale = 0.45
-        this.handAngle = 0
-        this.handAngleOpo = 0
+        this.handAngle = -395
+        this.handAngleOpo = 395
     }
 
     createGameObjects() {
@@ -478,13 +478,6 @@ export default class MainScene extends Phaser.Scene {
         if (this.gameOver) {
             this.time.removeEvent(this.inactivityEvent);
         }
-        // } else {
-        //     if (this.button1Clicked) {
-        //         this.uiHandController.setPosition(this.uiButton2.x - 120, this.uiButton2.y + 100, this.handAngle, this.uiButton2);
-        //     } else {
-        //         this.uiHandController.setPosition(this.uiButton1.x + 120, this.uiButton1.y + 100, this.handAngleOpo, this.uiButton1);
-        //     }
-        // }
     }
 
     handleGlobalClick() {
