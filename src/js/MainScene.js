@@ -125,7 +125,7 @@ export default class MainScene extends Phaser.Scene {
             .setOrigin(1, 0.5);
 
         // Set text size based on language
-        if(this.currentLanguage === 'es') {
+        if (this.currentLanguage === 'es') {
             this.textSize = 56;
         } else if(this.currentLanguage === 'fr') {
             this.textSize = 56;
