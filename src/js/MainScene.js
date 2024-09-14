@@ -129,6 +129,10 @@ export default class MainScene extends Phaser.Scene {
             this.textSize = 56;
         } else if(this.currentLanguage === 'fr') {
             this.textSize = 56;
+        // Add more languages here
+        // else if(this.currentLanguage === 'fr') {
+        //     this.textSize = 56;
+        // }
         } else {
             this.textSize = 72;
         }
