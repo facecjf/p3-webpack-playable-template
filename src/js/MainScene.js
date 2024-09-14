@@ -124,8 +124,17 @@ export default class MainScene extends Phaser.Scene {
             .setScale(this.ctaScale * this.scaleFactor)
             .setOrigin(1, 0.5);
 
+        // Set text size based on language
+        if(this.currentLanguage === 'es') {
+            this.textSize = 56;
+        } else if(this.currentLanguage === 'fr') {
+            this.textSize = 56;
+        } else {
+            this.textSize = 72;
+        }
+
         // Add CTA text
-        this.ctaText = this.add.bitmapText(this.CTA.x, this.CTA.y, 'gameFont', this.getLocalizedText('play_now'), 72)
+        this.ctaText = this.add.bitmapText(this.CTA.x, this.CTA.y, 'gameFont', this.getLocalizedText('play_now'), this.textSize, 1)
             .setOrigin(0.5)
             .setTint(0xFFFFFF)
             .setDepth(21);
@@ -142,7 +151,7 @@ export default class MainScene extends Phaser.Scene {
             .setScale(this.scaleFactor);
         
         // Add bitmap text to tutBG
-        this.tutText = this.add.bitmapText(this.tutBG.x, this.tutBG.y, 'gameFont', this.getLocalizedText('game_tut'), 42)
+        this.tutText = this.add.bitmapText(this.tutBG.x, this.tutBG.y, 'gameFont', this.getLocalizedText('game_tut'), 42, 1)
             .setDepth(11)
             .setOrigin(0.5)
             .setTint(0xFFFFFF);
