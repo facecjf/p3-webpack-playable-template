@@ -25,7 +25,8 @@ export default class MainScene extends Phaser.Scene {
             console.warn('Language data not loaded. Using fallback.');
             this.languageData = {
                 en: {
-                    play_now: "PLAY NOW",
+                    play_now: "!!PLAY NOW!!",
+                    game_tut: "!!TUTORIAL MSG!!"
                     // ... other fallback texts ...
                 }
             };
@@ -360,8 +361,6 @@ export default class MainScene extends Phaser.Scene {
         // Ensure these elements remain hidden
         this.tutBG.setVisible(false);
         this.tutText.setVisible(false);
-        //this.timerBG.setVisible(false);
-        //this.timerText.setVisible(false);
     }
 
     repositionRegularGameAssets() {
