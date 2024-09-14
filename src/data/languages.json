@@ -1,20 +1,14 @@
 {
     "en": {
       "play_now": "PLAY NOW",
-      "equip_btn": "NICE WORK!",
-      "game_fail": "TIMES UP!",
-      "game_tut": "TUTORIAL MSG!"
+      "game_tut": "TUTORIAL MESSAGE!"
     },
     "es": {
       "play_now": "JUEGA AHORA",
-      "equip_btn": "¡BUEN TRABAJO!",
-      "game_fail": "¡SE ACABÓ EL TIEMPO!",
-      "game_tut": "STORMTROOPER STICKERS 0/3..."
+      "game_tut": "¡MENSAJE TUTORIAL!"
     },
     "fr": {
       "play_now": "JOUER MAINTENANT",
-      "equip_btn": "BON TRAVAIL !",
-      "game_fail": "TEMPS UP !",
-      "game_tut": "STORMTROOPER STICKERS 0/3..."
+      "game_tut": "MESSAGE DU TUTORIEL !"
     }
   }
