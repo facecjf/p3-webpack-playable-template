@@ -159,9 +159,11 @@ export default class MainScene extends Phaser.Scene {
             .setScale(this.scaleFactor);
 
         // Legal
-        this.legal = this.add.image(this.centerX, this.gameHeight - 35 * this.scaleFactor, "legal");
+        this.legal = this.add.image(this.centerX, this.gameHeight - 35 * this.scaleFactor, "legal")
+            .setScale(this.scaleFactor);
         // Disclaimer
-        this.disclaimer = this.add.image(this.centerX, this.gameHeight - 20 * this.scaleFactor, "disclaimer");
+        this.disclaimer = this.add.image(this.centerX, this.gameHeight - 20 * this.scaleFactor, "disclaimer")
+            .setScale(this.scaleFactor);
 
         // Overlay for End Card
         this.overlay = this.add.graphics();
@@ -330,8 +332,10 @@ export default class MainScene extends Phaser.Scene {
         }
 
         // Common elements
-        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor);
-        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor);
+        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
+            .setScale(this.scaleFactor);
+        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
+        .setScale(this.scaleFactor);
         
         // Move this line to the end of the method
         if (!this.gameOver || this.gamePhase < 3) {
