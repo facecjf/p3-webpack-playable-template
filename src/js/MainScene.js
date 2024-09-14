@@ -98,10 +98,10 @@ export default class MainScene extends Phaser.Scene {
         this.gameOver = false;
         this.ctaClicked = false;
         this.inactiveTime = 6000;
-        this.logoScale = 0.45
-        this.ctaScale = 0.45
-        this.handAngle = -395
-        this.handAngleOpo = 395
+        this.logoScale = 0.45;
+        this.ctaScale = 0.45;
+        this.handAngle = -395;
+        this.handAngleOpo = 395;
     }
 
     createGameObjects() {
@@ -137,8 +137,7 @@ export default class MainScene extends Phaser.Scene {
             topElementsY + 100 * this.scaleFactor : 
             topElementsY;
         this.tutBG = this.add.image(this.centerX, tutBGY, "tutbg")
-            .setDepth(10)
-            .setScale(this.scaleFactor);
+            .setDepth(10);
         
         // Add bitmap text to tutBG
         this.tutText = this.add.bitmapText(this.tutBG.x, this.tutBG.y, 'gameFont', this.getLocalizedText('game_tut'), 42)
