@@ -137,7 +137,8 @@ export default class MainScene extends Phaser.Scene {
             topElementsY + 100 * this.scaleFactor : 
             topElementsY;
         this.tutBG = this.add.image(this.centerX, tutBGY, "tutbg")
-            .setDepth(10);
+            .setDepth(10)
+            .setScale(this.scaleFactor);
         
         // Add bitmap text to tutBG
         this.tutText = this.add.bitmapText(this.tutBG.x, this.tutBG.y, 'gameFont', this.getLocalizedText('game_tut'), 42)
