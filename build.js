@@ -102,6 +102,18 @@ module.exports = {
             // Remove the temporary config file
             fs.unlinkSync(tempConfigPath);
 
+            // Copy config.json for tiktok network
+            if (network === 'tiktok') {
+                const configSrcPath = path.join(templateDir, 'tiktok', 'config.json');
+                const configDestPath = path.join(buildDir, `${prefix}_tiktok`, 'config.json');
+                if (fs.existsSync(configSrcPath)) {
+                    fs.copyFileSync(configSrcPath, configDestPath);
+                    console.log('config.json copied to build directory for tiktok.');
+                } else {
+                    console.warn('config.json not found for tiktok.');
+                }
+            }
+
             console.log(`Build for ${network} completed successfully.`);
         } catch (error) {
             console.error(`Error building for ${network}:`, error.message);
