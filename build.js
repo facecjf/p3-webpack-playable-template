@@ -114,6 +114,31 @@ module.exports = {
                 }
             }
 
+            // Embed the compiled script into index.html for specified networks
+            if (!requiresInlining) {
+                const buildPath = path.join(buildDir, `${prefix}_${network}`);
+                const indexPath = path.join(buildPath, 'index.html');
+                const scriptPath = path.join(buildPath, 'playable.js');
+
+                if (fs.existsSync(indexPath) && fs.existsSync(scriptPath)) {
+                    let indexContent = fs.readFileSync(indexPath, 'utf8');
+                    const scriptContent = fs.readFileSync(scriptPath, 'utf8');
+
+                    // Replace the placeholder with the script content
+                    indexContent = indexContent.replace('// P3 SCRIPT HERE', `${scriptContent}`);
+
+                    // Write the modified index.html back to the build directory
+                    fs.writeFileSync(indexPath, indexContent);
+
+                    // Optionally, remove the standalone script file if no longer needed
+                    fs.unlinkSync(scriptPath);
+
+                    console.log(`Embedded script into index.html for ${network}.`);
+                } else {
+                    console.warn(`index.html or playable.js not found for ${network}.`);
+                }
+            }
+
             console.log(`Build for ${network} completed successfully.`);
         } catch (error) {
             console.error(`Error building for ${network}:`, error.message);
