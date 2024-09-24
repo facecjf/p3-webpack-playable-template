@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const readline = require('readline');
 
 const adNetworks = [
     'adcolony', 'applovin', 'facebook', 'google', 'ironsource',
@@ -18,15 +19,23 @@ if (!fs.existsSync(buildDir)) {
     fs.mkdirSync(buildDir);
 }
 
-function createWebpackConfig(network, inline) {
-    const templatePath = path.join(templateDir, network, 'index.html');
-    
-    console.log(`Checking for template file: ${templatePath}`);
-    if (!fs.existsSync(templatePath)) {
-        throw new Error(`Template file not found: ${templatePath}`);
-    }
+// Create readline interface for user input
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-    const configContent = `
+// Prompt user for project name prefix
+rl.question('Enter the project name prefix: ', (prefix) => {
+    function createWebpackConfig(network, inline) {
+        const templatePath = path.join(templateDir, network, 'index.html');
+        
+        console.log(`Checking for template file: ${templatePath}`);
+        if (!fs.existsSync(templatePath)) {
+            throw new Error(`Template file not found: ${templatePath}`);
+        }
+
+        const configContent = `
 const path = require('path');
 const webpack = require('webpack');
 const CustomHtmlWebpackPlugin = require('./CustomHtmlWebpackPlugin');
@@ -36,7 +45,7 @@ module.exports = {
     entry: './src/index.js',
     output: {
         filename: "playable.js",
-        path: path.resolve(__dirname, 'dist', '${network}'),
+        path: path.resolve(__dirname, 'dist', '${prefix}_${network}'),
         clean: true
     },
     module: {
@@ -70,33 +79,35 @@ module.exports = {
 };
 `;
 
-    return configContent;
-}
-
-adNetworks.forEach(network => {
-    console.log(`Building for ${network}...`);
-
-    // Determine if this network requires inlining
-    const requiresInlining = ['facebook', 'moloco', 'tencent'].includes(network);
-
-    try {
-        // Create webpack config for this network
-        const configContent = createWebpackConfig(network, requiresInlining);
-
-        // Write the webpack config to a temporary file
-        const tempConfigPath = path.join(__dirname, `webpack.${network}.config.js`);
-        fs.writeFileSync(tempConfigPath, configContent);
-
-        // Run the build command with the custom config
-        execSync(`npx webpack --config ${tempConfigPath}`, { stdio: 'inherit', env: process.env });
-
-        // Remove the temporary config file
-        fs.unlinkSync(tempConfigPath);
-
-        console.log(`Build for ${network} completed successfully.`);
-    } catch (error) {
-        console.error(`Error building for ${network}:`, error.message);
+        return configContent;
     }
-});
 
-console.log('All builds completed.');
+    adNetworks.forEach(network => {
+        console.log(`Building for ${network}...`);
+
+        // Determine if this network requires inlining
+        const requiresInlining = ['facebook', 'moloco', 'tencent'].includes(network);
+
+        try {
+            // Create webpack config for this network
+            const configContent = createWebpackConfig(network, requiresInlining);
+
+            // Write the webpack config to a temporary file
+            const tempConfigPath = path.join(__dirname, `webpack.${network}.config.js`);
+            fs.writeFileSync(tempConfigPath, configContent);
+
+            // Run the build command with the custom config
+            execSync(`npx webpack --config ${tempConfigPath}`, { stdio: 'inherit', env: process.env });
+
+            // Remove the temporary config file
+            fs.unlinkSync(tempConfigPath);
+
+            console.log(`Build for ${network} completed successfully.`);
+        } catch (error) {
+            console.error(`Error building for ${network}:`, error.message);
+        }
+    });
+
+    console.log('All builds completed.');
+    rl.close();
+});
