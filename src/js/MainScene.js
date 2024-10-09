@@ -62,8 +62,8 @@ export default class MainScene extends Phaser.Scene {
         this.deviceType = this.getDeviceType();
         
         // Base scale calculation
-        const baseScaleX = this.gameWidth / 639;
-        const baseScaleY = this.gameHeight / 639;
+        const baseScaleX = this.gameWidth / 720;
+        const baseScaleY = this.gameHeight / 720;
         
         // Calculate scaling factor based on device type and orientation
         if (this.deviceType === 'phone') {
@@ -76,14 +76,14 @@ export default class MainScene extends Phaser.Scene {
         }
         
         // Limit the scale factor to prevent overly large assets
-        this.scaleFactor = Math.min(this.scaleFactor, 1.15);
+        this.scaleFactor = Math.min(this.scaleFactor, 1);
     }
 
     getDeviceType() {
         const aspectRatio = this.gameWidth / this.gameHeight;
         if (Math.abs(aspectRatio - 1) < 0.1) {
             return 'square';
-        } else if (this.gameWidth >= 1080 || this.gameHeight >= 1080) {
+        } else if (this.gameWidth >= 1280 || this.gameHeight >= 1280) {
             return 'tablet';
         } else {
             return 'phone';
