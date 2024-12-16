@@ -25,10 +25,10 @@ export default class PreloaderScene extends Phaser.Scene {
             logo: require('../img/logo.png'),
             cta: require('../img/cta_blank.png'),
             uihand: require('../img/ui_hand.png'),
-            button: require('../img/button.png'),
             legal: require('../img/legal.png'),
             disclaimer: require('../img/disclaimer.png'),
-            tutbg: require('../img/tutbg.png')
+            tutbg: require('../img/tutbg.png'),
+            ember: require('../img/ember.png')
         };
 
         const atlasFiles = {
