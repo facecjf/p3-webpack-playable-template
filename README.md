@@ -52,16 +52,18 @@ Resource loading is declared in `js/PreloaderScene.js`
 const audioFiles = {
     custom_name1: require('../audio/filename1.mp3')
 };
+
 const textureFiles = {
     custom_name2: require('../img/filename2.png'),
 };
+
 const atlasFiles = {
     gameAtlas: {
         png: require('../img/filename3.png'),
         json: require('../json/filename3.json')
     }
 };
-this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
+
 const spritesheetFiles = {
     filename5Sprites: {
         png: require('../img/filename5.png'),
@@ -69,5 +71,7 @@ const spritesheetFiles = {
     }
     // Add more spritesheets as needed
 };
+
+this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
 ```
 
