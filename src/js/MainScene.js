@@ -63,6 +63,9 @@ export default class MainScene extends Phaser.Scene {
             };
         }
 
+        // Initialize game camera
+        this.gameCamera = this.cameras.main;
+
         // Initialize game components
         this.initializeGameVariables();
         this.createGameObjects();
