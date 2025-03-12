@@ -118,6 +118,7 @@ export default class MainScene extends Phaser.Scene {
         this.createEmberEmitter();
 
         // ADD CALLS TO NEW GAME METHODS HERE
+        
     }
 
     //// ADD NEW GAME METHODS HERE
@@ -344,6 +345,50 @@ export default class MainScene extends Phaser.Scene {
 
         this.input.on('pointerdown', this.handleGlobalClick, this);
         this.CTA.on('pointerdown', this.handleCTAClick, this);
+        
+        // Add event listener for ad viewable change (for Unity ads)
+        window.addEventListener('adViewableChange', this.handleAdViewableChange.bind(this));
+    }
+
+    // Handle ad viewable change events (for Unity ads)
+    handleAdViewableChange(event) {
+        const isViewable = event.detail.viewable;
+        
+        if (isViewable) {
+            // Resume game when ad becomes viewable
+            if (this.scene.isPaused()) {
+                this.scene.resume();
+                
+                // Resume any tweens or animations
+                if (this.tutTextTween && !this.tutTextTween.isPlaying()) {
+                    this.tutTextTween.resume();
+                }
+                
+                // Resume any particle emitters
+                if (this.emberEmitter && this.emberEmitter.paused) {
+                    this.emberEmitter.resume();
+                }
+                
+                console.log('Game resumed due to ad becoming viewable');
+            }
+        } else {
+            // Pause game when ad is not viewable
+            if (!this.scene.isPaused()) {
+                this.scene.pause();
+                
+                // Pause any tweens or animations
+                if (this.tutTextTween && this.tutTextTween.isPlaying()) {
+                    this.tutTextTween.pause();
+                }
+                
+                // Pause any particle emitters
+                if (this.emberEmitter && !this.emberEmitter.paused) {
+                    this.emberEmitter.pause();
+                }
+                
+                console.log('Game paused due to ad not being viewable');
+            }
+        }
     }
 
     // Handle game resize events

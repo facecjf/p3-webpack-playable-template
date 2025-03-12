@@ -3,6 +3,8 @@ export default class AdNetworkManager {
         this.adNetwork = process.env.NODE_ENV === 'production' 
             ? (process.env.AD_NETWORK || 'default')
             : 'development';
+        this.isAdVisible = false;
+        this.gameStarted = false;
     }
 
     clickCTA() {
@@ -68,6 +70,12 @@ export default class AdNetworkManager {
             case 'mintegral':
                 window.gameStart();
                 break;
+            case 'unity':
+                if (this.isAdVisible && !this.gameStarted) {
+                    this.gameStarted = true;
+                    console.log('Unity: Game started due to ad being visible');
+                }
+                break;
             default:
                 console.log('Default start game ad');
         }
@@ -88,8 +96,45 @@ export default class AdNetworkManager {
             case 'mintegral':
                 window.gameReady && window.gameReady();
                 break;
+            case 'unity':
+                // Set up viewableChange event listener for Unity ads
+                if (typeof mraid !== 'undefined') {
+                    mraid.addEventListener('viewableChange', this.handleViewableChange.bind(this));
+                    
+                    // Check if the ad is already viewable
+                    if (mraid.isViewable()) {
+                        this.isAdVisible = true;
+                        console.log('Unity: Ad is initially viewable');
+                    }
+                }
+                break;
             default:
                 console.log('Default loaded game ad');
+        }
+    }
+
+    // Handle viewable change events for Unity ads
+    handleViewableChange(viewable) {
+        if (this.adNetwork !== 'unity') return;
+        
+        this.isAdVisible = viewable;
+        
+        if (viewable) {
+            console.log('Unity: Ad became viewable');
+            // If the ad becomes viewable, start the game if it hasn't started yet
+            if (!this.gameStarted) {
+                this.gameStarted = true;
+                this.startGameAd();
+            }
+            
+            // Dispatch a custom event that the game can listen for
+            const viewableEvent = new CustomEvent('adViewableChange', { detail: { viewable: true } });
+            window.dispatchEvent(viewableEvent);
+        } else {
+            console.log('Unity: Ad is no longer viewable');
+            // Dispatch a custom event that the game can listen for to pause gameplay
+            const viewableEvent = new CustomEvent('adViewableChange', { detail: { viewable: false } });
+            window.dispatchEvent(viewableEvent);
         }
     }
 }

@@ -23,7 +23,45 @@
     </style>     
 
 <script>
-function onSdkReady(){mraid.addEventListener("viewableChange",viewableChangeHandler),mraid.isViewable()&&showMyAd()}function showMyAd(){}function viewableChangeHandler(e){e&&showMyAd()}Start(),"loading"===mraid.getState()?mraid.addEventListener("ready",onSdkReady):onSdkReady();
+function onSdkReady() {
+  // Add viewableChange event listener
+  mraid.addEventListener("viewableChange", viewableChangeHandler);
+  
+  // Check if the ad is already viewable
+  if (mraid.isViewable()) {
+    showMyAd();
+  }
+}
+
+function showMyAd() {
+  // This function will be called when the ad becomes viewable
+  console.log("Unity ad is now viewable");
+  // The game will handle this through the AdNetworkManager
+}
+
+function viewableChangeHandler(viewable) {
+  // Handle viewable change events
+  if (viewable) {
+    showMyAd();
+  } else {
+    console.log("Unity ad is no longer viewable");
+    // The game will handle pausing through the AdNetworkManager
+  }
+}
+
+// Initialize MRAID
+function Start() {
+  if (mraid.getState() === "loading") {
+    // If MRAID is still loading, add a listener for the ready event
+    mraid.addEventListener("ready", onSdkReady);
+  } else {
+    // If MRAID is already ready, call onSdkReady immediately
+    onSdkReady();
+  }
+}
+
+// Start the initialization process
+Start();
 </script>
 <script>
 	var userAgent = navigator.userAgent || navigator.vendor;
