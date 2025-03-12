@@ -22,7 +22,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "phaser": "^3.85.0"
+    "phaser": "3.85.0"
   },
   "packageManager": "yarn@3.2.0"
 }
