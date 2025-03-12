@@ -368,6 +368,9 @@ export default class MainScene extends Phaser.Scene {
                 if (this.emberEmitter && this.emberEmitter.paused) {
                     this.emberEmitter.resume();
                 }
+
+                // Resume sound
+                this.sound.resumeAll();
                 
                 console.log('Game resumed due to ad becoming viewable');
             }
@@ -385,6 +388,9 @@ export default class MainScene extends Phaser.Scene {
                 if (this.emberEmitter && !this.emberEmitter.paused) {
                     this.emberEmitter.pause();
                 }
+
+                // Pause sound
+                this.sound.pauseAll();
                 
                 console.log('Game paused due to ad not being viewable');
             }
