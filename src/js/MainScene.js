@@ -353,7 +353,7 @@ export default class MainScene extends Phaser.Scene {
     // Handle ad viewable change events (for Unity ads)
     handleAdViewableChange(event) {
         const isViewable = event.detail.viewable;
-        
+    
         if (isViewable) {
             // Resume game when ad becomes viewable
             if (this.scene.isPaused()) {
@@ -368,15 +368,30 @@ export default class MainScene extends Phaser.Scene {
                 if (this.emberEmitter && this.emberEmitter.paused) {
                     this.emberEmitter.resume();
                 }
-
-                // Resume sound
-                this.sound.resumeAll();
+                
+                // Resume individual sounds that were playing before pause
+                // For looping background music
+                if (this.bgmusic && this.bgmusicWasPlaying) {
+                    this.bgmusic.resume();
+                    this.bgmusicWasPlaying = false;
+                }
+                
+                // For any other sounds that need to be resumed
+                this.resumeSoundObjects();
                 
                 console.log('Game resumed due to ad becoming viewable');
             }
         } else {
             // Pause game when ad is not viewable
             if (!this.scene.isPaused()) {
+                // Store state of background music before pausing
+                if (this.bgmusic && this.bgmusic.isPlaying) {
+                    this.bgmusicWasPlaying = true;
+                }
+                
+                // Pause all individual sound objects
+                this.pauseSoundObjects();
+                
                 this.scene.pause();
                 
                 // Pause any tweens or animations
@@ -388,12 +403,37 @@ export default class MainScene extends Phaser.Scene {
                 if (this.emberEmitter && !this.emberEmitter.paused) {
                     this.emberEmitter.pause();
                 }
-
-                // Pause sound
-                this.sound.pauseAll();
                 
                 console.log('Game paused due to ad not being viewable');
             }
+        }
+    }
+
+    // Helper method to pause all sound objects
+    pauseSoundObjects() {
+        // Store the playing state of each sound before pausing
+        this.soundStates = {
+            
+            bgmusic: this.bgmusic && this.bgmusic.isPlaying,
+            
+        };
+        
+        // Pause all sounds
+        this.sound.pauseAll();
+        
+        // Additional handling for any sounds that might need special treatment
+        if (this.bgmusic) {
+            this.bgmusic.pause();
+        }
+    }
+
+    // Helper method to resume sound objects that were playing
+    resumeSoundObjects() {
+        // Only resume sounds that were playing when paused
+        if (this.soundStates) {
+            
+            if (this.soundStates.bgmusic && this.bgmusic) this.bgmusic.resume();
+            
         }
     }
 
