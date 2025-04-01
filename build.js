@@ -6,7 +6,7 @@ const readline = require('readline');
 const adNetworks = [
     // 'unity'
     'development', 'adcolony', 'applovin', 'facebook', 'google', 'ironsource',
-    'liftoff', 'mintegral', 'moloco', 'tencent', 'tiktok', 'unity', 'vungle'
+    'liftoff', 'mintegral', 'moloco', 'smadex', 'tencent', 'tiktok', 'unity', 'vungle'
 ];
 
 const buildDir = path.join(__dirname, 'dist');
@@ -87,7 +87,7 @@ module.exports = {
         console.log(`Building for ${network}...`);
 
         // Determine if this network requires inlining
-        const requiresInlining = ['facebook', 'google', 'moloco', 'tencent'].includes(network);
+        const requiresInlining = ['facebook', 'google', 'moloco', 'smadex', 'tencent'].includes(network);
 
         try {
             // Create webpack config for this network
