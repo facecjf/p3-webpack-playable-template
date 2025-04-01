@@ -36,6 +36,9 @@ export default class AdNetworkManager {
             case 'unity':
                 mraid.open(url);
                 break;
+            case 'smadex':
+                window.open(window.location.href = '{$CLICK_TRACK_URL$}');
+                break;
             case 'mintegral':
                 window.gameEnd && window.gameEnd();
                 window.gameClose();
