@@ -369,28 +369,14 @@ export default class MainScene extends Phaser.Scene {
                     this.emberEmitter.resume();
                 }
                 
-                // Resume individual sounds that were playing before pause
-                // For looping background music
-                if (this.bgmusic && this.bgmusicWasPlaying) {
-                    this.bgmusic.resume();
-                    this.bgmusicWasPlaying = false;
-                }
-                
-                // For any other sounds that need to be resumed
-                this.resumeSoundObjects();
+                // Resume sound
+                 this.sound.resumeAll();
                 
                 console.log('Game resumed due to ad becoming viewable');
             }
         } else {
             // Pause game when ad is not viewable
             if (!this.scene.isPaused()) {
-                // Store state of background music before pausing
-                if (this.bgmusic && this.bgmusic.isPlaying) {
-                    this.bgmusicWasPlaying = true;
-                }
-                
-                // Pause all individual sound objects
-                this.pauseSoundObjects();
                 
                 this.scene.pause();
                 
@@ -403,6 +389,8 @@ export default class MainScene extends Phaser.Scene {
                 if (this.emberEmitter && !this.emberEmitter.paused) {
                     this.emberEmitter.pause();
                 }
+
+                this.sound.pauseAll();
                 
                 console.log('Game paused due to ad not being viewable');
             }
@@ -439,6 +427,7 @@ export default class MainScene extends Phaser.Scene {
 
     // Handle game resize events
     resize() {
+        this.scene.pause();
         // reset inactivity timer
         if (!this.gameOver && this.isInactivity) {
             this.inactivityTimer();
@@ -462,6 +451,13 @@ export default class MainScene extends Phaser.Scene {
 
         // create ember emitter
         this.createEmberEmitter();
+        
+        // Resume the scene after resizing
+        this.scene.resume();
+
+        if (!this.gameOver) {
+            this.resumeSoundObjects();
+        }
     }
 
     // Resize background images based on orientation
