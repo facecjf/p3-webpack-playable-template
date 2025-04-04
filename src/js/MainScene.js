@@ -348,6 +348,14 @@ export default class MainScene extends Phaser.Scene {
         
         // Add event listener for ad viewable change (for Unity ads)
         window.addEventListener('adViewableChange', this.handleAdViewableChange.bind(this));
+
+        // Listen for ad viewable state changes
+        if (typeof FbPlayableAd !== 'undefined') {
+            FbPlayableAd.onAdViewableChange.bind(this);
+            FbPlayableAd.onAdViewableChange.add((event) => {
+                this.handleAdViewableChange(event);
+            }, this);
+        }
     }
 
     // Handle ad viewable change events (for Unity ads)
