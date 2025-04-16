@@ -1,166 +1,140 @@
 export default class AdNetworkManager {
     constructor() {
-        if (process.env.NODE_ENV === 'production') {
-            this.adNetwork = process.env.AD_NETWORK || 'default';
-        } else {
-            this.adNetwork = 'development';
-        }
+        this.adNetwork = process.env.NODE_ENV === 'production' 
+            ? (process.env.AD_NETWORK || 'default')
+            : 'development';
         this.isAdVisible = false;
         this.gameStarted = false;
     }
 
     clickCTA() {
         switch (this.adNetwork) {
+            // Add any specific CTA Click logic here
             case 'development':
-                console.log('CTA clicked in development');
+                console.log('Development: CTA Clicked');
                 break;
             case 'google':
-                console.log('CTA clicked for Google');
+                window.open(window.globalThis.clickTag);
                 break;
             case 'ironsource':
-                if (typeof mraid !== 'undefined') {
-                    mraid.open();
-                } else {
-                    console.log('MRAID not available for CTA');
-                }
+                mraid.open(url); 
                 break;
             case 'facebook':
-                if (typeof FbPlayableAd !== 'undefined') {
-                    FbPlayableAd.onCTAClick();
-                } else {
-                    console.log('FbPlayableAd not available');
-                }
-                break;
             case 'moloco':
-                console.log('CTA clicked for Moloco');
-                break;
             case 'tencent':
-                console.log('CTA clicked for Tencent');
+                FbPlayableAd.onCTAClick();
                 break;
             case 'applovin':
-                if (typeof mraid !== 'undefined') {
-                    mraid.open();
-                } else {
-                    console.log('MRAID not available for CTA');
-                }
-                break;
             case 'liftoff':
-                console.log('CTA clicked for Liftoff');
-                break;
             case 'adcolony':
-                console.log('CTA clicked for AdColony');
-                break;
             case 'chartboost':
-                console.log('CTA clicked for Chartboost');
+                mraid.open();
                 break;
             case 'tiktok':
-                console.log('CTA clicked for TikTok');
+                window.openAppStore();
                 break;
             case 'unity':
-                if (typeof mraid !== 'undefined') {
-                    mraid.open();
-                } else {
-                    console.log('MRAID not available for CTA');
-                }
+                mraid.open(url);
                 break;
             case 'smadex':
-                console.log('CTA clicked for Smadex');
+                window.open(window.location.href = '{$CLICK_TRACK_URL$}');
                 break;
             case 'mintegral':
-                console.log('CTA clicked for Mintegral');
+                window.gameEnd && window.gameEnd();
+                window.gameClose();
+                window.install && window.install();
                 break;
             case 'vungle':
-                console.log('CTA clicked for Vungle');
+                parent.postMessage('download', '*');
                 break;
             default:
-                console.log('CTA clicked for default network');
-                break;
+                console.log('Default CTA click');
         }
     }
 
     endGameAd() {
         switch (this.adNetwork) {
+            // Add any specific end game ad logic here
             case 'vungle':
-                window.postMessage({ type: 'complete' }, '*');
+                parent.postMessage('complete', '*');
+                console.log('Ad experience has completed');
                 break;
             case 'mintegral':
-                if (typeof window.gameEnd === 'function') {
-                    window.gameEnd();
-                } else {
-                    console.log('gameEnd not available');
-                }
+                window.gameEnd && window.gameEnd();
                 break;
             default:
-                console.log('End game for default network');
-                break;
+                console.log('Default end game ad');
         }
     }
 
     startGameAd() {
         switch (this.adNetwork) {
+            // Add any specific start game ad logic here
             case 'mintegral':
-                if (typeof window.gameStart === 'function') {
-                    window.gameStart();
-                } else {
-                    console.log('gameStart not available');
-                }
+                window.gameStart();
                 break;
             case 'unity':
                 if (this.isAdVisible && !this.gameStarted) {
-                    this.startGame();
                     this.gameStarted = true;
+                    console.log('Unity: Game started due to ad being visible');
                 }
                 break;
             default:
-                console.log('Start game for default network');
-                break;
+                console.log('Default start game ad');
         }
     }
 
     loadedGameAd() {
-        if (this.adNetwork === 'ironsource' || this.adNetwork === 'applovin') {
-            if (typeof mraid !== 'undefined') {
-                if (mraid.getState() === 'loading') {
-                    mraid.addEventListener('ready', () => {
-                        const state = mraid.getState();
-                        console.log('MRAID state:', state);
-                        this.startGame();
-                    });
-                } else {
-                    const state = mraid.getState();
-                    console.log('MRAID state:', state);
-                    this.startGame();
+        switch (this.adNetwork) {
+            // Add any specific load game ad logic here
+            case 'applovin':
+                mraid.getState();
+                break;
+            case 'ironsource':
+                mraid.getState();
+                break;
+            case 'mintegral':
+                window.gameReady && window.gameReady();
+                break;
+            case 'unity':
+                // Set up viewableChange event listener for Unity ads
+                if (typeof mraid !== 'undefined') {
+                    mraid.addEventListener('viewableChange', this.handleViewableChange.bind(this));
+                    
+                    // Check if the ad is already viewable
+                    if (mraid.isViewable()) {
+                        this.isAdVisible = true;
+                        console.log('Unity: Ad is initially viewable');
+                    }
                 }
-            } else {
-                console.log('MRAID is not available');
-                this.startGame();
-            }
-        } else if (this.adNetwork === 'unity') {
-            if (typeof mraid !== 'undefined') {
-                mraid.addEventListener('viewableChange', (viewable) => {
-                    this.handleViewableChange(viewable);
-                });
-            } else {
-                console.log('MRAID not available for Unity');
-                this.startGame();
-            }
-        } else {
-            console.log('Ad network not supported or default');
-            this.startGame();
+                break;
+            default:
+                console.log('Default loaded game ad');
         }
     }
 
+    // Handle viewable change events for Unity ads
     handleViewableChange(viewable) {
+        if (this.adNetwork !== 'unity') return;
+        
         this.isAdVisible = viewable;
-        if (viewable && !this.gameStarted) {
-            this.startGame();
-            this.gameStarted = true;
+        
+        if (viewable) {
+            console.log('Unity: Ad became viewable');
+            // If the ad becomes viewable, start the game if it hasn't started yet
+            if (!this.gameStarted) {
+                this.gameStarted = true;
+                this.startGameAd();
+            }
+            
+            // Dispatch a custom event that the game can listen for
+            const viewableEvent = new CustomEvent('adViewableChange', { detail: { viewable: true } });
+            window.dispatchEvent(viewableEvent);
+        } else {
+            console.log('Unity: Ad is no longer viewable');
+            // Dispatch a custom event that the game can listen for to pause gameplay
+            const viewableEvent = new CustomEvent('adViewableChange', { detail: { viewable: false } });
+            window.dispatchEvent(viewableEvent);
         }
-        const event = new CustomEvent('adViewableChange', { detail: { viewable } });
-        window.dispatchEvent(event);
     }
-
-    startGame() {
-        console.log('Starting game for', this.adNetwork);
-        // Implement game start logic here
-    }
+}
