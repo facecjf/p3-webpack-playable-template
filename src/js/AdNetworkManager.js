@@ -17,7 +17,7 @@ export default class AdNetworkManager {
                 window.open(window.globalThis.clickTag);
                 break;
             case 'ironsource':
-                dapi.openStoreUrl();
+                mraid.open(url); 
                 break;
             case 'facebook':
             case 'moloco':
@@ -91,10 +91,7 @@ export default class AdNetworkManager {
                 mraid.getState();
                 break;
             case 'ironsource':
-                dapi.isReady();
-                dapi.getScreenSize();
-                dapi.isViewable();
-                dapi.getAudioVolume();
+                mraid.getState();
                 break;
             case 'mintegral':
                 window.gameReady && window.gameReady();
