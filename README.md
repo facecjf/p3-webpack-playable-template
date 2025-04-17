@@ -42,7 +42,7 @@ npm start
 
 To build the final file use
 ```bash
-npm run build
+node build.js
 ```
 
 The finished `index.html` file is waiting for you in the `dist` folder
