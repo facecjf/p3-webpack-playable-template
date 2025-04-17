@@ -7,7 +7,7 @@ const gameConfig = {
     parent: 'gameContainer',
     backgroundColor: '#000000',
     scale: {
-         mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.RESIZE,
         parent: 'phaser-example',
         width: '100%',
         height: '100%'

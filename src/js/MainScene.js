@@ -31,6 +31,10 @@ export default class MainScene extends Phaser.Scene {
         this.uiHandEndX = 0;
         this.uiHandEndY = 0;
 
+        // Delta time handling
+        this.targetFPS = 60;
+        this.deltaMultiplier = 1;
+        this.lastFrameTime = 0;
     }
 
     // Create the scene
@@ -47,7 +51,7 @@ export default class MainScene extends Phaser.Scene {
         this.centerY = this.responsiveSettings.centerY;
         this.scaleFactor = this.responsiveSettings.scaleFactor;
         this.isPortrait = this.responsiveSettings.isPortrait;
-
+        
         // Load language data from cache
         this.languageData = this.cache.json.get('languages');
         
@@ -62,6 +66,8 @@ export default class MainScene extends Phaser.Scene {
                 }
             };
         }
+        // Initialize delta time handling
+        this.initializeDeltaTimeHandling();
 
         // Initialize game camera
         this.gameCamera = this.cameras.main;
@@ -84,6 +90,16 @@ export default class MainScene extends Phaser.Scene {
         this.gameBottom = this.gameHeight;
         this.gameRight = this.gameWidth;
         this.gameLeft = 0;
+    }
+
+    // Method after initializeGameVariables
+    initializeDeltaTimeHandling() {
+        // Get the device's refresh rate if possible (fallback to 60)
+        const refreshRate = window.screen?.refreshRate || 60;
+        this.targetFPS = refreshRate;
+        
+        // Set initial frame time
+        this.lastFrameTime = this.time.now;
     }
 
     // Create and position game objects (background, logo, CTA, etc.)
@@ -149,9 +165,9 @@ export default class MainScene extends Phaser.Scene {
         if (this.currentLanguage === 'es') {
             this.CTATextSize = 56;
             this.tutTextSize = 42;
-        } else if(this.currentLanguage === 'fr') {
-            this.CTATextSize = 56;
-            this.tutTextSize = 42;
+        // } else if(this.currentLanguage === 'fr') {
+        //     this.CTATextSize = 56;
+        //     this.tutTextSize = 42;
         // Add more languages here
         // else if(this.currentLanguage === 'jp') {
         //     this.textSize = 56;
@@ -237,7 +253,10 @@ export default class MainScene extends Phaser.Scene {
                 ease: 'Sine.easeInOut',
                 duration: 1000,
                 repeat: -1,
-                yoyo: true
+                yoyo: true,
+                onUpdate: (tween, target) => {
+                    // No extra work needed, Phaser handles the delta time internally
+                }
             });
         };
 
@@ -315,6 +334,11 @@ export default class MainScene extends Phaser.Scene {
             blendMode: 'ADD',
             quantity: 1,
             advance: 4000,
+            emitCallback: (particle) => {
+                // Optional: Apply deltaMultiplier to individual particles if needed
+                particle.velocityX *= this.deltaMultiplier;
+                particle.velocityY *= this.deltaMultiplier;
+            },
             deathZone: {
                 type: 'onLeave',
                 source: new Phaser.Geom.Rectangle(0, 0, this.gameWidth, this.gameHeight)
@@ -788,8 +812,21 @@ export default class MainScene extends Phaser.Scene {
     }
 
     // Update loop
-    update() {
-        // Game update loop
+    update(time, delta) {
+        // Calculate delta time multiplier (normalize to 60 FPS)
+        const targetDelta = 1000 / this.targetFPS;
+        this.deltaMultiplier = delta / targetDelta;
+        
+        // Cap the multiplier to prevent extreme values on very slow/fast devices
+        this.deltaMultiplier = Phaser.Math.Clamp(this.deltaMultiplier, 0.5, 2.0);
+        
+        // Update particle emitter flow rate if needed
+        if (this.emberEmitter && !this.emberEmitter.paused) {
+            // Optional: Adjust frequency based on delta time if needed
+            //this.emberEmitter.setFrequency(80 / this.deltaMultiplier);
+        }
+
+        // Main Game Update Loop - Used for setting game phases
         if (this.gamePhase == 0 && !this.gameOver) {
             console.log('Phase 1 Tutorial');
             // Notify ad network that game ad is starting
@@ -811,6 +848,8 @@ export default class MainScene extends Phaser.Scene {
                 this.gamePhase++;
             }
         }
+        // Store the current frame time for next frame's delta calculation
+         this.lastFrameTime = time;
     }
 }
 
