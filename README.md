@@ -13,8 +13,8 @@
 - Localization support via ``` languages.json ```
 
 ### In The Works
-- Incorporate Languages in build script
-- Update build for correct output based on 'INDEX' template html files
+:pushpin: Incorporate Languages in build script
+:heavy_check_mark: Update build for correct output based on 'INDEX' template html files
 
 ### Requirements
 [Node.js](https://nodejs.org/) (with npm)
