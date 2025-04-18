@@ -20,15 +20,34 @@
 		  padding: 0 !important;
 		}
 	  </style>     
-	
 	<script src="mraid.js"></script>
 	<script>
+		// Define store URLs
 		var userAgent = navigator.userAgent || navigator.vendor;
 		var url = 'https://apps.apple.com/us/app/harry-potter-puzzles-spells/id1434505322'; // IOS
 		var android = 'https://play.google.com/store/apps/details?id=com.zynga.pottermatch'; // ANDROID
 		if (/android/i.test(userAgent)) {
-		url = android;
-		};
+			url = android;
+		}
+		
+		// Wait for MRAID to be ready before initializing the game
+		function mraidIsReady() {
+			var event = new Event('mraidIsReady');
+			document.dispatchEvent(event);
+		}
+		
+		// Check if MRAID is available and set up listeners
+		if (typeof mraid !== 'undefined') {
+			if (mraid.getState() === 'ready') {
+				mraidIsReady();
+			} else {
+				mraid.addEventListener('ready', mraidIsReady);
+			}
+		} else {
+			console.warn('MRAID not found - running in non-MRAID environment');
+			// Fallback for testing environments without MRAID
+			setTimeout(mraidIsReady, 100);
+		}
 	</script>
 </head>
 <body>
