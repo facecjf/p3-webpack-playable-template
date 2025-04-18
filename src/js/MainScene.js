@@ -365,8 +365,7 @@ export default class MainScene extends Phaser.Scene {
     setupEventListeners() {
         // Set up event listeners for user interactions
         this.scale.on('resize', this.resize, this);
-        window.addEventListener('resize', () => this.resize());
-
+        //window.addEventListener('resize', () => this.resize()); <-- Likely redundant
         this.input.on('pointerdown', this.handleGlobalClick, this);
         this.CTA.on('pointerdown', this.handleCTAClick, this);
         

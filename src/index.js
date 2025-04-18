@@ -12,7 +12,9 @@ const gameConfig = {
         width: '100%',
         height: '100%'
     },
-    scene: null
+    scene: null,
+    antialias: true,
+    devicePixelRatio: window.devicePixelRatio
 };
 const game = new Phaser.Game(gameConfig);
 

@@ -16,19 +16,19 @@ export class ResponsiveSettings {
         
         // Determine if the game is in portrait mode
         this.isPortrait = this.gameHeight >= this.gameWidth;
-        
+        this.devicePixelRatio = window.devicePixelRatio;
         // Determine device type
         this.deviceType = this.getDeviceType();
         
         // Calculate scaling factors
-        const baseScaleX = this.gameWidth / 720;
-        const baseScaleY = this.gameHeight / 720;
+        const baseScaleX = this.gameWidth / 667;
+        const baseScaleY = this.gameHeight / 667;
         
         // Calculate scaling factor based on device type and orientation
         if (this.deviceType === 'phone') {
             this.scaleFactor = this.isPortrait ? baseScaleX : baseScaleY;
         } else if (this.deviceType === 'tablet') {
-            this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.8;
+            this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.75;
         } else { // square
             this.scaleFactor = Math.min(baseScaleX, baseScaleY);
         }
@@ -48,10 +48,13 @@ export class ResponsiveSettings {
     getDeviceType() {
         const aspectRatio = this.gameWidth / this.gameHeight;
         if (Math.abs(aspectRatio - 1) < 0.1) {
+            console.log('square');
             return 'square';
-        } else if (this.gameWidth >= 1280 || this.gameHeight >= 1280) {
+        } else if (this.gameWidth >= 1024 || this.gameHeight >= 1024) {
+            console.log('tablet');
             return 'tablet';
         } else {
+            console.log('phone');
             return 'phone';
         }
     }
