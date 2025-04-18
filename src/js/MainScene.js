@@ -40,7 +40,8 @@ export default class MainScene extends Phaser.Scene {
     // Create the scene
     create() {
         console.log('%cSCENE::Main', 'color: #fff; background: #ab24f8;')
-
+        // Setup MRAID listeners
+        this.setupMRAIDListeners();
         // Initialize ResponsiveSettings with scene reference
         this.responsiveSettings = new ResponsiveSettings(this);
         
@@ -77,7 +78,6 @@ export default class MainScene extends Phaser.Scene {
         this.createGameObjects();
         this.setupEventListeners();
         this.createUIHand();
-
         // Notify ad network that game ad is loaded
         this.adNetworkManager.loadedGameAd();
     }
@@ -379,6 +379,16 @@ export default class MainScene extends Phaser.Scene {
                 this.handleAdViewableChange(event);
             }, this);
         }
+    }
+
+    // MRAID listeners
+    setupMRAIDListeners() {
+        // Listen for MRAID ready event from AdNetworkManager
+        window.addEventListener('mraidReady', (event) => {
+            console.log('MRAID ready event received in game');
+            // Now it's safe to start game functionality
+            this.adNetworkManager.startGameAd();
+        });
     }
 
     // Handle ad viewable change events (for Unity ads)
