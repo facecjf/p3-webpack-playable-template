@@ -90,9 +90,38 @@ export default class AdNetworkManager {
             case 'applovin':
                 mraid.getState();
                 break;
-            case 'ironsource':
-                mraid.getState();
-                break;
+           case 'ironsource':
+            if (typeof mraid !== 'undefined') {
+                // Check if mraid is already ready
+                if (mraid.getState() === 'ready') {
+                    console.log('MRAID is already in ready state');
+                    this.isAdReady = true;
+                    // Dispatch a custom event for the game to listen for
+                    const readyEvent = new CustomEvent('mraidReady', { detail: { ready: true } });
+                    window.dispatchEvent(readyEvent);
+                } else {
+                    // Listen for the ready event
+                    mraid.addEventListener('ready', () => {
+                        console.log('MRAID ready event received');
+                        this.isAdReady = true;
+                        // Dispatch a custom event for the game to listen for
+                        const readyEvent = new CustomEvent('mraidReady', { detail: { ready: true } });
+                        window.dispatchEvent(readyEvent);
+                    });
+                }
+                
+                // Set up viewableChange event listener
+                mraid.addEventListener('viewableChange', this.handleViewableChange.bind(this));
+                
+                // Check initial viewable state
+                if (mraid.isViewable()) {
+                    this.isAdVisible = true;
+                    console.log('Ironsource: Ad is initially viewable');
+                }
+            } else {
+                console.warn('MRAID is not defined');
+            }
+            break;
             case 'mintegral':
                 window.gameReady && window.gameReady();
                 break;
