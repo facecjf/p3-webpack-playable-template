@@ -82,6 +82,15 @@ export default class MainScene extends Phaser.Scene {
         this.adNetworkManager.loadedGameAd();
     }
 
+    // Method to initialize game after MRAID is ready
+    startGameInitialization() {
+        // Game can now safely start
+        this.adNetworkManager.startGameAd();
+        // Here you could trigger any animations or start game logic
+        console.log('Game initialization started');
+        // If there's any delayed initialization that should only happen after MRAID is ready, do it here
+    }
+
     
     // Initialize various game state variables
     initializeGameVariables() {
@@ -385,9 +394,29 @@ export default class MainScene extends Phaser.Scene {
     setupMRAIDListeners() {
         // Listen for MRAID ready event from AdNetworkManager
         window.addEventListener('mraidReady', (event) => {
-            console.log('MRAID ready event received in game');
+            console.log('MRAID ready event received in game, proceeding with game initialization');
             // Now it's safe to start game functionality
-            this.adNetworkManager.startGameAd();
+            this.startGameInitialization();
+        });
+        
+        // Handle ad visibility changes
+        window.addEventListener('adViewableChange', (event) => {
+            const isViewable = event.detail.viewable;
+            if (isViewable) {
+                console.log('Ad became viewable, resuming game');
+                // Resume your game here if paused
+                if (this.scene.isPaused()) {
+                    this.scene.resume();
+                    this.sound.resumeAll();
+                }
+            } else {
+                console.log('Ad no longer viewable, pausing game');
+                // Pause your game here
+                if (!this.scene.isPaused()) {
+                    this.scene.pause();
+                    this.sound.pauseAll();
+                }
+            }
         });
     }
 
