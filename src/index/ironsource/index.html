@@ -12,6 +12,7 @@
 		  margin: 0;
 		  padding: 0;
 		  background-color: #000000;
+		  overflow: hidden;
 		}
 		* {
 		  height: 100vh; 
@@ -29,25 +30,24 @@
 		if (/android/i.test(userAgent)) {
 			url = android;
 		}
-		
-		// Wait for MRAID to be ready before initializing the game
-		function mraidIsReady() {
-			var event = new Event('mraidIsReady');
-			document.dispatchEvent(event);
-		}
-		
-		// Check if MRAID is available and set up listeners
-		if (typeof mraid !== 'undefined') {
-			if (mraid.getState() === 'ready') {
-				mraidIsReady();
-			} else {
-				mraid.addEventListener('ready', mraidIsReady);
-			}
-		} else {
-			console.warn('MRAID not found - running in non-MRAID environment');
-			// Fallback for testing environments without MRAID
-			setTimeout(mraidIsReady, 100);
-		}
+		// For testing in browser environments without MRAID
+		if (typeof mraid === 'undefined') {
+        window.mraid = {
+          getState: function() { return 'ready'; },
+          addEventListener: function(event, callback) { 
+            if (event === 'ready' && callback) setTimeout(callback, 10); 
+          },
+          isViewable: function() { return true; },
+          open: function(url) { 
+            console.log('MRAID.open:', url); 
+            window.open(url, '_blank');
+          }
+        };
+        console.log('Created mock MRAID for testing');
+      } else {
+        // Log MRAID state to help with debugging
+        console.log('Initial MRAID state:', mraid.getState());
+      }
 	</script>
 </head>
 <body>
