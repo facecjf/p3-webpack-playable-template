@@ -174,12 +174,12 @@ export default class AdNetworkManager {
 
     // Handle viewable change events for Unity ads
     handleViewableChange(viewable) {
-        if (this.adNetwork !== 'unity') return;
+        if (this.adNetwork !== 'unity' || this.adNetwork !== 'ironsource') return;
         
         this.isAdVisible = viewable;
         
         if (viewable) {
-            console.log('Unity: Ad became viewable');
+            console.log('Ad became viewable');
             // If the ad becomes viewable, start the game if it hasn't started yet
             if (!this.gameStarted) {
                 this.gameStarted = true;
@@ -190,7 +190,7 @@ export default class AdNetworkManager {
             const viewableEvent = new CustomEvent('adViewableChange', { detail: { viewable: true } });
             window.dispatchEvent(viewableEvent);
         } else {
-            console.log('Unity: Ad is no longer viewable');
+            console.log('Ad is no longer viewable');
             // Dispatch a custom event that the game can listen for to pause gameplay
             const viewableEvent = new CustomEvent('adViewableChange', { detail: { viewable: false } });
             window.dispatchEvent(viewableEvent);
