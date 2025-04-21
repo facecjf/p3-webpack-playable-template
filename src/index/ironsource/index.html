@@ -30,24 +30,31 @@
 		if (/android/i.test(userAgent)) {
 			url = android;
 		}
+		
+		// Error handling for MRAID
+		window.onerror = function(message, source, lineno, colno, error) {
+		    console.error('Error:', message, 'at', source, lineno, colno);
+		    return true; // Prevents default error handling
+		};
+		
 		// For testing in browser environments without MRAID
 		if (typeof mraid === 'undefined') {
-        window.mraid = {
-          getState: function() { return 'ready'; },
-          addEventListener: function(event, callback) { 
-            if (event === 'ready' && callback) setTimeout(callback, 10); 
-          },
-          isViewable: function() { return true; },
-          open: function(url) { 
-            console.log('MRAID.open:', url); 
-            window.open(url, '_blank');
-          }
-        };
-        console.log('Created mock MRAID for testing');
-      } else {
-        // Log MRAID state to help with debugging
-        console.log('Initial MRAID state:', mraid.getState());
-      }
+            window.mraid = {
+              getState: function() { return 'ready'; },
+              addEventListener: function(event, callback) { 
+                if (event === 'ready' && callback) setTimeout(callback, 10); 
+              },
+              isViewable: function() { return true; },
+              open: function(url) { 
+                console.log('MRAID.open:', url); 
+                window.open(url, '_blank');
+              }
+            };
+            console.log('Created mock MRAID for testing');
+        } else {
+            // Log MRAID state to help with debugging
+            console.log('Initial MRAID state:', mraid.getState());
+        }
 	</script>
 </head>
 <body>
