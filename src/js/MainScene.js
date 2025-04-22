@@ -5,7 +5,7 @@ import { ResponsiveSettings } from './ResponsiveSettings';
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'Main' }); // Set the scene key
-        //this.adNetworkManager = new AdNetworkManager.default(); // Initialize ad network manager
+        this.adNetworkManager = new AdNetworkManager.default(); // Initialize ad network manager
         this.currentLanguage = 'en-us'; // Default language
         //this.timeRemaining = 30; // Initial time for the countdown timer
         this.timerStarted = false; // Flag to check if timer has started
@@ -40,10 +40,6 @@ export default class MainScene extends Phaser.Scene {
     // Create the scene
     create() {
         console.log('%cSCENE::Main', 'color: #fff; background: #ab24f8;')
-        // Get AdNetworkManager from registry
-        this.adNetworkManager = this.game.registry.get('adNetworkManager');
-        // Setup MRAID listeners
-        this.setupMRAIDListeners();
         // Initialize ResponsiveSettings with scene reference
         this.responsiveSettings = new ResponsiveSettings(this);
         
@@ -381,7 +377,7 @@ export default class MainScene extends Phaser.Scene {
         this.CTA.on('pointerdown', this.handleCTAClick, this);
         
         // Add event listener for ad viewable change (for Unity ads)
-        //window.addEventListener('adViewableChange', this.handleAdViewableChange.bind(this));
+        window.addEventListener('adViewableChange', this.handleAdViewableChange.bind(this));
 
         // Listen for ad viewable state changes
         if (typeof FbPlayableAd !== 'undefined') {
@@ -389,40 +385,6 @@ export default class MainScene extends Phaser.Scene {
             FbPlayableAd.onAdViewableChange.add((event) => {
                 this.handleAdViewableChange(event);
             }, this);
-        }
-    }
-
-    // MRAID listeners
-    setupMRAIDListeners() {
-        console.log('Setting up MRAID listeners in Main scene');
-    
-        // We still need to listen for viewableChange events
-        if (typeof mraid !== 'undefined') {
-            mraid.addEventListener('viewableChange', (isViewable) => {
-                console.log('Ad viewable state changed to:', isViewable);
-                
-                if (isViewable) {
-                    // Resume the game
-                    if (this.scene.isPaused()) {
-                        this.scene.resume();
-                        this.sound.resumeAll();
-                    }
-                } else {
-                    // Pause the game
-                    if (!this.scene.isPaused()) {
-                        this.scene.pause();
-                        this.sound.pauseAll();
-                    }
-                }
-            });
-            
-            // Check initial viewable state
-            if (mraid.isViewable()) {
-                console.log('Ad is initially viewable');
-            } else {
-                console.log('Ad is initially not viewable');
-                // You might want to pause the game initially if it's not viewable
-            }
         }
     }
 
