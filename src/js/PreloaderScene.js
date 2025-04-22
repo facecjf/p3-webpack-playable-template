@@ -15,12 +15,6 @@ export default class PreloaderScene extends Phaser.Scene {
 
     preload() {
         console.log('%cSCENE::Preload', 'color: #fff; background: #ff1462;')
-         // Log MRAID status at preload start
-        if (typeof mraid !== 'undefined') {
-            console.log('Preloader started with MRAID state:', mraid.getState());
-        } else {
-            console.log('Preloader started without MRAID');
-        }
         
         const audioFiles = {
             sound_fx: require('../audio/sound_fx.mp3')
