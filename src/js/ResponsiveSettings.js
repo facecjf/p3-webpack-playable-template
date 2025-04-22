@@ -50,7 +50,7 @@ export class ResponsiveSettings {
         if (Math.abs(aspectRatio - 1) < 0.1) {
             console.log('square');
             return 'square';
-        } else if (this.gameWidth >= 1024 || this.gameHeight >= 1024) {
+        } else if (this.gameWidth >= 768 && this.gameHeight >= 1024) {
             console.log('tablet');
             return 'tablet';
         } else {
