@@ -19,13 +19,7 @@ export default class AdNetworkManager {
                 window.open(window.globalThis.clickTag);
                 break;
             case 'ironsource':
-                console.log('Ironsource: CTA clicked, opening URL');
-                // Use mraid.open with the correct URL
-                if (typeof mraid !== 'undefined' && typeof url !== 'undefined') {
-                    mraid.open(url);
-                } else {
-                    console.error('MRAID or URL not defined for click action');
-                }
+                mraid.open(url); 
                 break;
             case 'facebook':
             case 'moloco':
@@ -82,14 +76,11 @@ export default class AdNetworkManager {
                 window.gameStart();
                 break;
             case 'ironsource':
-                if (this.isAdReady) {
-                    console.log('Ironsource: Game starting after MRAID ready');
+                if (this.isAdVisible && !this.gameStarted) {
                     this.gameStarted = true;
-                } else {
-                    console.log('Ironsource: Waiting for MRAID ready before game can start');
-                    // The game will start after mraidReady event
+                    console.log('IS: Game started due to ad being visible');
                 }
-                break;
+                    break;
             case 'unity':
                 if (this.isAdVisible && !this.gameStarted) {
                     this.gameStarted = true;
@@ -107,57 +98,53 @@ export default class AdNetworkManager {
             case 'applovin':
                 mraid.getState();
                 break;
-            case 'ironsource':
-                if (typeof mraid !== 'undefined') {
-                    console.log("Setting up MRAID for IronSource");
-                    
-                    // Set up the ready event listener first
-                    mraid.addEventListener('ready', () => {
-                        console.log('MRAID ready event received');
-                        this.isAdReady = true;
-                        
-                        // Dispatch a custom event for the game to listen for
-                        const readyEvent = new CustomEvent('mraidReady', { detail: { ready: true } });
-                        window.dispatchEvent(readyEvent);
-                        
-                        // Also set up viewableChange event listener after ready
-                        mraid.addEventListener('viewableChange', (isViewable) => {
-                            this.isAdVisible = isViewable;
-                            console.log('Ironsource: Ad viewable state changed to', isViewable);
-                            
-                            // Dispatch event for game to handle visibility changes
-                            const viewEvent = new CustomEvent('adViewableChange', { 
-                                detail: { viewable: isViewable } 
-                            });
-                            window.dispatchEvent(viewEvent);
+                case 'ironsource':
+                    if (typeof mraid !== 'undefined') {
+                        // 〚1〛 helper so we don’t duplicate the start logic
+                        const tryStartGame = () => {
+                            if (
+                                this.isAdVisible &&          // the ad is on‑screen
+                                this.isMraidReady &&         // ‘ready’ event has fired
+                                this.isStatePlayable &&      // state is default|expanded
+                                !this.gameStarted            // we haven’t started yet
+                            ) {
+                                this.startGameAd();
+                            }
+                        };
+    
+                        // 〚2〛 READY ────────────────
+                        this.isMraidReady = false;
+                        mraid.addEventListener('ready', () => {
+                            console.log('IS: mraid ready');
+                            this.isMraidReady = true;
+                            tryStartGame();
                         });
-                        
-                        // Check initial viewable state
-                        if (mraid.isViewable()) {
-                            this.isAdVisible = true;
-                            console.log('Ironsource: Ad is initially viewable');
+    
+                        // 〚3〛 STATE CHANGE ─────────
+                        this.isStatePlayable = false;
+                        const onStateChange = (state) => {
+                            this.isStatePlayable = (state === 'default' || state === 'expanded');
+                            console.log(`IS: state → ${state}`);
+                            tryStartGame();
+                        };
+                        mraid.addEventListener('stateChange', onStateChange);
+    
+                        // If mraid is already injected & ready you won’t get a ready
+                        // event, so we normalise the current values immediately.
+                        if (mraid.getState() !== 'loading') {
+                            this.isMraidReady = true;
+                            onStateChange(mraid.getState());
                         }
-                    });
-                    
-                    // Check if MRAID is already ready (sometimes this happens before we set listeners)
-                    if (mraid.getState() === 'ready') {
-                        console.log('MRAID is already in ready state');
-                        this.isAdReady = true;
-                        
-                        // Dispatch a custom event for the game to listen for
-                        const readyEvent = new CustomEvent('mraidReady', { detail: { ready: true } });
-                        window.dispatchEvent(readyEvent);
+    
+                        // 〚4〛 VIEWABILITY ──────────
+                        mraid.addEventListener(
+                            'viewableChange',
+                            this.handleViewableChange.bind(this)
+                        );
+                        // prime the visibility flag
+                        this.isAdVisible = mraid.isViewable();
                     }
-                } else {
-                    console.warn('MRAID is not defined, falling back to non-MRAID mode');
-                    // For testing environments, simulate MRAID ready
-                    setTimeout(() => {
-                        this.isAdReady = true;
-                        const readyEvent = new CustomEvent('mraidReady', { detail: { ready: true } });
-                        window.dispatchEvent(readyEvent);
-                    }, 100);
-                }
-                break;
+                    break;
             case 'mintegral':
                 window.gameReady && window.gameReady();
                 break;
@@ -187,7 +174,7 @@ export default class AdNetworkManager {
         if (viewable) {
             console.log('Ad became viewable');
             // If the ad becomes viewable, start the game if it hasn't started yet
-            if (!this.gameStarted && this.isAdReady) {
+            if (!this.gameStarted) {
                 this.gameStarted = true;
                 this.startGameAd();
             }
