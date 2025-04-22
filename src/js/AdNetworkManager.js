@@ -165,7 +165,7 @@ export default class AdNetworkManager {
         }
     }
 
-    // Handle viewable change events for Unity ads
+    // Handle viewable change events for Unity & ironsource ads
     handleViewableChange(viewable) {
         if (this.adNetwork !== 'unity' && this.adNetwork !== 'ironsource') return;
         

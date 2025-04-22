@@ -48,13 +48,13 @@ export class ResponsiveSettings {
     getDeviceType() {
         const aspectRatio = this.gameWidth / this.gameHeight;
         if (Math.abs(aspectRatio - 1) < 0.1) {
-            console.log('square');
+            console.log('Device: square');
             return 'square';
         } else if ((this.gameWidth >= 768 && this.gameHeight >= 1024) || (this.gameWidth >= 1024 && this.gameHeight >= 768)) {
-            console.log('tablet');
+            console.log('Device: tablet');
             return 'tablet';
         } else {
-            console.log('phone');
+            console.log('Device: phone');
             return 'phone';
         }
     }
