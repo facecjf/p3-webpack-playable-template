@@ -465,6 +465,7 @@ export default class MainScene extends Phaser.Scene {
 
     // Handle game resize events
     resize() {
+        
         this.scene.pause();
         // reset inactivity timer
         if (!this.gameOver && this.isInactivity) {

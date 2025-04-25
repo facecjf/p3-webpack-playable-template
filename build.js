@@ -4,9 +4,9 @@ const { execSync } = require('child_process');
 const readline = require('readline');
 
 const adNetworks = [
-    // 'unity'
-    'development', 'adcolony', 'applovin', 'facebook', 'google', 'ironsource',
-    'liftoff', 'mintegral', 'moloco', 'smadex', 'tencent', 'tiktok', 'unity', 'vungle'
+    'ironsource'
+    // 'development', 'adcolony', 'applovin', 'facebook', 'google', 'ironsource',
+    // 'liftoff', 'mintegral', 'moloco', 'smadex', 'tencent', 'tiktok', 'unity', 'vungle'
 ];
 
 const buildDir = path.join(__dirname, 'dist');

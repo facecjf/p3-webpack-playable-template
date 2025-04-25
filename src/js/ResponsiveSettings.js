@@ -9,8 +9,8 @@ export class ResponsiveSettings {
     // Initialize responsive design variables
     initializeResponsiveDesign() {
         // Get dimensions from the scene
-        this.gameWidth = this.scene.scale.gameSize.width;
-        this.gameHeight = this.scene.scale.gameSize.height;
+        this.gameWidth = window.innerWidth;
+        this.gameHeight = window.innerHeight;
         this.centerX = this.gameWidth / 2;
         this.centerY = this.gameHeight / 2;
         

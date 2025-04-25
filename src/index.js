@@ -9,16 +9,18 @@ const gameConfig = {
     scale: {
         mode: Phaser.Scale.RESIZE,
         parent: 'phaser-example',
-        width: '100%',
-        height: '100%'
+        width: window.innerWidth,
+        height: window.innerHeight
     },
-    scene: null,
-    antialias: true,
-    devicePixelRatio: window.devicePixelRatio
+    scene: null
 };
-const game = new Phaser.Game(gameConfig);
 
-game.scene.add("Preload", PreloaderScene);
-game.scene.add("Main", MainScene);
+window.bootGame = function() {
+    const game = new Phaser.Game(gameConfig);
+    game.scene.add("Preload", PreloaderScene);
+    game.scene.add("Main", MainScene);
+    game.scene.start("Preload");
+};
 
-game.scene.start("Preload");
+// ENABLE FOR DEVELOPMENT
+window.bootGame();

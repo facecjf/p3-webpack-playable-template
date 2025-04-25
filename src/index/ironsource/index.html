@@ -1,110 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-    <meta name="ad.orientation" content="portrait,landscape" />
-    <title>PlayableIS</title>
-    <style type="text/css">
-		html,
-		body {
-		  margin: 0;
-		  padding: 0;
-		  background-color: #000000;
-		  overflow: hidden;
-		}
-		* {
-		  height: 100vh; 
-		  width: 100vw;
-		  margin: 0 !important;
-		  padding: 0 !important;
-		}
-	  </style>  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+        margin: 0;
+        padding: 0;
+        color: rgba(255, 255, 255, 0.87);
+        background-color: #000000;
+      }
+      * {
+        height: 100vh; 
+        width: 100vw;
+        overflow: hidden;
+      }
+    </style> 
 
-    <script src="mraid.js"></script>
-    <!-- GATE PLAYABLE BEHIND ready + stateChange + viewable -->
-    <script>
-      (function () {
-        if (typeof mraid === "undefined") {
-          console.warn("mraid.js not present running in desktop preview");
-          startPlayable();
-          return;
-        }
+<script src="mraid.js"></script>
+<script>
+  (function () {
+    if (typeof mraid === "undefined") {
+      console.warn("mraid.js not present running in desktop preview");
+      startPlayable();
+      return;
+    }
 
-        /* ––––– Flags ––––– */
-        let isReady = false;
-        let isPlayableState = false; // state {default, expanded}
-        let isViewable = false;
+    let isReady = false;
+    let isPlayableState = false;
+    let isViewable = false;
 
-        const playableStates = ["default", "expanded"];
-        const tryStart = () => {
-          if (isReady && isPlayableState && isViewable) {
-            startPlayable();
-          }
-        };
+    const playableStates = ["default", "expanded"];
+    const tryStart = () => {
+      if (isReady && isPlayableState && isViewable) {
+        startPlayable();
+      }
+    };
 
-        /* READY */
-        mraid.addEventListener("ready", () => {
-          console.log("MRAID : ready");
-          isReady = true;
-          tryStart();
-        });
+    mraid.addEventListener("ready", () => {
+      isReady = true;
+      tryStart();
+    });
 
-        /* STATE */
-        const handleState = (state) => {
-          isPlayableState = playableStates.includes(state);
-          console.log(`MRAID : state = ${state}`);
-          tryStart();
-        };
-        mraid.addEventListener("stateChange", handleState);
+    mraid.addEventListener("stateChange", (state) => {
+      isPlayableState = playableStates.includes(state);
+      tryStart();
+    });
 
-        /* VIEWABILITY */
-        mraid.addEventListener("viewableChange", (viewable) => {
-          isViewable = viewable;
-          console.log(`MRAID : viewable = ${viewable}`);
-          tryStart();
-        });
+    mraid.addEventListener("viewableChange", (viewable) => {
+      isViewable = viewable;
+      tryStart();
+    });
 
-        /* If mraid already injected, normalise immediately */
-        if (mraid.getState() !== "loading") {
-          isReady = true;
-          handleState(mraid.getState());
-        }
-        isViewable = mraid.isViewable();
+    if (mraid.getState() !== "loading") {
+      isReady = true;
+      isPlayableState = playableStates.includes(mraid.getState());
+    }
+    isViewable = mraid.isViewable();
 
-        function startPlayable() {
-          if (window._hasStartedPlayable) return; // guard against duplicates
-          window._hasStartedPlayable = true;
-          console.log("PLAYABLE START");
-
-          /* OPTIONAL:
-             Your Phaser bundle should expose a *single* boot method,
-             e.g.  window.bootGame = () => { new Phaser.Game(config); } */
-          if (typeof window.bootGame === "function") {
-            window.bootGame();
-          }
-
-          /* Dispatch visibility info for in‑game pause/resume, if needed */
-          const evt = new CustomEvent("adViewableChange", {
-            detail: { viewable: true },
-          });
-          window.dispatchEvent(evt);
-        }
-      })();
-    </script>
-  </head>
-  <body>
-    <script>
-      /* Call window.openStore(anyUrl) from your game */
-      window.openStore = function (url) {
-        if (typeof mraid !== "undefined") {
-          mraid.open(url);
-        } else {
-          window.open(url, "_blank");
-        }
-      };
-    </script>
+    function startPlayable() {
+      if (window._hasStartedPlayable) return;
+      window._hasStartedPlayable = true;
+      if (typeof window.bootGame === "function") {
+        window.bootGame();
+      }
+      const evt = new CustomEvent("adViewableChange", {
+        detail: { viewable: true },
+      });
+      window.dispatchEvent(evt);
+    }
+  })();
+</script>
+<script>
+	var userAgent = navigator.userAgent || navigator.vendor;
+	var url = 'https://apps.apple.com/us/app/harry-potter-puzzles-spells/id1434505322'; // IOS
+	var android = 'https://play.google.com/store/apps/details?id=com.zynga.pottermatch'; // ANDROID
+	if (/android/i.test(userAgent)) {
+	url = android;
+	};  
+</script>
+</head>
+<body>
 <script>
 	// P3 SCRIPT HERE	
 </script>	
