@@ -22,5 +22,5 @@ window.bootGame = function() {
     game.scene.start("Preload");
 };
 
-// ENABLE FOR DEVELOPMENT
+// turn off for Ironsource - Keep on for Mintergral
 window.bootGame();
