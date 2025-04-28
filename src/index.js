@@ -22,5 +22,6 @@ window.bootGame = function() {
     game.scene.start("Preload");
 };
 
-// turn off for Ironsource - Keep on for Mintergral
+// turn off for Ironsource Builds
+// may cause issues if left on on other ad networks.
 window.bootGame();
