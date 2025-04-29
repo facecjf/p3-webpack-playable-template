@@ -30,7 +30,7 @@ export class ResponsiveSettings {
         } else if (this.deviceType === 'tablet') {
             this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.75;
         } else { // square
-            this.scaleFactor = Math.min(baseScaleX, baseScaleY);
+            this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.5;
         }
         
         // Limit the scale factor
