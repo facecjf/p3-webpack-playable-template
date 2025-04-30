@@ -78,6 +78,9 @@ export default class MainScene extends Phaser.Scene {
         this.createUIHand();
         // Notify ad network that game ad is loaded
         this.adNetworkManager.loadedGameAd();
+
+        // Initialize Audio
+        // e.g. this.audioFile = this.sound.add('audioFile', { loop: false, volume: 1.5 });
     }
 
     // Method to initialize game after MRAID is ready
@@ -139,6 +142,9 @@ export default class MainScene extends Phaser.Scene {
 
         // Start Embers
         this.createEmberEmitter();
+
+        // Pause all sounds
+        this.pauseSoundObjects();
 
         // ADD CALLS TO NEW GAME METHODS HERE
         
