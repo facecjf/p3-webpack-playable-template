@@ -629,6 +629,8 @@ export default class MainScene extends Phaser.Scene {
             this.gameOverMan();
             this.gamePhase = 3;
         }
+        // Pause all sounds
+        this.sound.pauseAll();
     }
 
     // Remove UI hand tweens
