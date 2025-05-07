@@ -1,19 +1,24 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-        body {
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="ad.orientation" content="portrait,landscape">
+    <title>Phaser3 Webpack Playable Ads</title>
+    <style type="text/css">
+      html,
+      body {
         margin: 0;
         padding: 0;
-        color: rgba(255, 255, 255, 0.87);
         background-color: #000000;
+        overflow: hidden;
       }
       * {
         height: 100vh; 
         width: 100vw;
-        overflow: hidden;
+        margin: 0 !important;
+        padding: 0 !important;
       }
     </style> 
 
@@ -52,6 +57,8 @@
       tryStart();
     });
 
+    mraid.addEventListener("volumeChange", audioVolumeChangeCallback);
+
     if (mraid.getState() !== "loading") {
       isReady = true;
       isPlayableState = playableStates.includes(mraid.getState());
@@ -70,14 +77,29 @@
       window.dispatchEvent(evt);
     }
   })();
+    function audioVolumeChangeCallback(volume){
+      let isAudioEnabled = !!volume;
+      if (isAudioEnabled){
+        unmuteGameSound();
+      } else {
+        muteGameSound();  
+      }
+    }
 </script>
 <script>
-	var userAgent = navigator.userAgent || navigator.vendor;
-	var url = 'https://apps.apple.com/us/app/harry-potter-puzzles-spells/id1434505322'; // IOS
-	var android = 'https://play.google.com/store/apps/details?id=com.zynga.pottermatch'; // ANDROID
-	if (/android/i.test(userAgent)) {
-	url = android;
-	};  
+	  var userAgent = navigator.userAgent || navigator.vendor;
+    var url = 'https://apps.apple.com/ph/app/game-of-thrones-legends-rpg/id1575445835'; // IOS
+    var android = 'https://play.google.com/store/apps/details?id=com.zynga.gotm&hl=en_US&pli=1'; // ANDROID
+    if (/android/i.test(userAgent)) {
+      url = android;
+	  };  /* Call window.openStore(anyUrl) from your game */
+  window.openStore = function (url) {
+    if (typeof mraid !== "undefined") {
+      mraid.open(url);
+    } else {
+      window.open(url, "_blank");
+    }
+  };
 </script>
 </head>
 <body>
