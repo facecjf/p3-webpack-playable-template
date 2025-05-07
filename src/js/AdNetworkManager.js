@@ -165,6 +165,16 @@ export default class AdNetworkManager {
         }
     }
 
+    audioVolumeChange(volume) {
+        switch (this.adNetwork) {
+            case 'ironsource':
+                mraid.setVolume(volume);
+                break;
+            default:
+                console.log('Default audio volume change');
+        }
+    }
+    
     // Handle viewable change events for Unity & ironsource ads
     handleViewableChange(viewable) {
         if (this.adNetwork !== 'unity' && this.adNetwork !== 'ironsource') return;
