@@ -7,6 +7,49 @@ export default class AdNetworkManager {
         this.gameStarted = false;
         this.isAdReady = false;
         this.isAdLoaded = false;
+
+        // --- Bigabid-specific state ---
+        this.bigabidInteractionCount = 0;
+        this.hasBigabidEngaged = false;
+        this.hasBigabidCompleted = false;
+    }
+
+    // --- Helper to fire Bigabid macros ---
+    fireBigabidMacro(macroName) {
+        if (
+            window.BIGABID_BIDTIMEMACROS &&
+            window.BIGABID_BIDTIMEMACROS[macroName]
+        ) {
+            const url = window.BIGABID_BIDTIMEMACROS[macroName];
+            const img = new window.Image();
+            img.src = url;
+        }
+    }
+
+    // --- Call this on any user interaction (pointerdown, etc.) ---
+    handleBigabidEngagement() {
+        if (this.adNetwork !== 'bigabid') return;
+
+        this.bigabidInteractionCount += 1;
+
+        // Fire engagement macro on first interaction
+        if (!this.hasBigabidEngaged) {
+            this.hasBigabidEngaged = true;
+            this.fireBigabidMacro('engagement');
+            console.log('Bigabid: engagement fired');
+        }
+
+        // Fire complete macro after 3+ interactions, only once
+        if (
+            this.bigabidInteractionCount >= 3 &&
+            !this.hasBigabidCompleted
+        ) {
+            this.hasBigabidCompleted = true;
+            this.fireBigabidMacro('complete');
+            console.log('Bigabid: complete fired'); 
+            this.fireBigabidMacro('final_url');
+            console.log('Bigabid: final_url fired');
+        }
     }
 
     clickCTA() {
@@ -49,6 +92,13 @@ export default class AdNetworkManager {
             case 'vungle':
                 parent.postMessage('download', '*');
                 break;
+            case 'bigabid':
+                // Fire click, complete, and final_url macros (no redirect)
+                this.fireBigabidMacro('click');
+                this.fireBigabidMacro('complete');
+                this.fireBigabidMacro('final_url');
+                console.log('Bigabid: click, complete, and final_url fired');
+                break;
             default:
                 console.log('Default CTA click');
         }
@@ -63,6 +113,11 @@ export default class AdNetworkManager {
                 break;
             case 'mintegral':
                 window.gameEnd && window.gameEnd();
+                break;
+            case 'bigabid':
+                this.fireBigabidMacro('complete');
+                this.fireBigabidMacro('final_url');
+                console.log('Bigabid: complete and final_url fired');
                 break;
             default:
                 console.log('Default end game ad');
@@ -87,6 +142,9 @@ export default class AdNetworkManager {
                     console.log('Unity: Game started due to ad being visible');
                 }
                 break;
+            case 'bigabid':
+                this.fireBigabidMacro('game_viewable');
+                break;
             default:
                 console.log('Default start game ad');
         }
@@ -100,19 +158,19 @@ export default class AdNetworkManager {
                 break;
                 case 'ironsource':
                     if (typeof mraid !== 'undefined') {
-                        // 〚1〛 helper so we don’t duplicate the start logic
+                        // 1 helper so we don't duplicate the start logic
                         const tryStartGame = () => {
                             if (
                                 this.isAdVisible &&          // the ad is on‑screen
-                                this.isMraidReady &&         // ‘ready’ event has fired
+                                this.isMraidReady &&         // 'ready' event has fired
                                 this.isStatePlayable &&      // state is default|expanded
-                                !this.gameStarted            // we haven’t started yet
+                                !this.gameStarted            // we haven't started yet
                             ) {
                                 this.startGameAd();
                             }
                         };
     
-                        // 〚2〛 READY ────────────────
+                        // 2 READY 
                         this.isMraidReady = false;
                         mraid.addEventListener('ready', () => {
                             console.log('IS: mraid ready');
@@ -120,7 +178,7 @@ export default class AdNetworkManager {
                             tryStartGame();
                         });
     
-                        // 〚3〛 STATE CHANGE ─────────
+                        // 3 STATE CHANGE
                         this.isStatePlayable = false;
                         const onStateChange = (state) => {
                             this.isStatePlayable = (state === 'default' || state === 'expanded');
@@ -129,14 +187,14 @@ export default class AdNetworkManager {
                         };
                         mraid.addEventListener('stateChange', onStateChange);
     
-                        // If mraid is already injected & ready you won’t get a ready
+                        // If mraid is already injected & ready you won't get a ready
                         // event, so we normalise the current values immediately.
                         if (mraid.getState() !== 'loading') {
                             this.isMraidReady = true;
                             onStateChange(mraid.getState());
                         }
     
-                        // 〚4〛 VIEWABILITY ──────────
+                        // 4 VIEWABILITY
                         mraid.addEventListener(
                             'viewableChange',
                             this.handleViewableChange.bind(this)
@@ -159,6 +217,10 @@ export default class AdNetworkManager {
                         console.log('Unity: Ad is initially viewable');
                     }
                 }
+                break;
+            case 'bigabid':
+                this.fireBigabidMacro('mraid_viewable');
+                console.log('Bigabid: mraid_viewable fired');
                 break;
             default:
                 console.log('Default loaded game ad');

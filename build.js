@@ -4,9 +4,9 @@ const { execSync } = require('child_process');
 const readline = require('readline');
 
 const adNetworks = [
-     //'development',
-     'applovin', 'facebook', 'google', 'ironsource', 'chartboost',
-     'liftoff', 'mintegral', 'moloco', 'unity', 'vungle'
+    'development' //,'chartboost',
+    //  'adcolony','applovin', 'bigabid', 'facebook', 'google', 'ironsource',
+    //  'liftoff', 'mintegral', 'moloco', 'unity', 'vungle', 'tiktok', 'smadex'
 ];
 
 const buildDir = path.join(__dirname, 'dist');
@@ -112,6 +112,18 @@ module.exports = {
                     console.log('config.json copied to build directory for tiktok.');
                 } else {
                     console.warn('config.json not found for tiktok.');
+                }
+            }
+
+            // Copy config.json for tiktok network
+            if (network === 'bigabid') {
+                const configSrcPath = path.join(templateDir, 'bigabid', 'ad.txt');
+                const configDestPath = path.join(buildDir, `${prefix}_bigabid`, 'ad.txt');
+                if (fs.existsSync(configSrcPath)) {
+                    fs.copyFileSync(configSrcPath, configDestPath);
+                    console.log('ad.txt copied to build directory for bigabid.');
+                } else {
+                    console.warn('ad.txt not found for bigabid.');
                 }
             }
 

@@ -684,6 +684,7 @@ export default class MainScene extends Phaser.Scene {
             this.removeTweens();
             this.stopTutTextTween();
             this.resetInactivityTimer();
+            this.adNetworkManager.handleBigabidEngagement();
         } else {
             console.log('click / ui hand reset works!');
             this.removeTweens();
