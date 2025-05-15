@@ -80,16 +80,16 @@
     function audioVolumeChangeCallback(volume){
       let isAudioEnabled = !!volume;
       if (isAudioEnabled){
-        unmuteGameSound();
+        muteGameSound();
       } else {
-        muteGameSound();  
+        unmuteGameSound();  
       }
     }
 </script>
 <script>
 	  var userAgent = navigator.userAgent || navigator.vendor;
-    var url = 'https://apps.apple.com/ph/app/game-of-thrones-legends-rpg/id1575445835'; // IOS
-    var android = 'https://play.google.com/store/apps/details?id=com.zynga.gotm&hl=en_US&pli=1'; // ANDROID
+    var url = 'https://apps.apple.com/us/app/game-of-thrones-slots-casino/id1369317521'; // IOS
+    var android = 'https://play.google.com/store/apps/details?id=com.zynga.gotslots'; // ANDROID
     if (/android/i.test(userAgent)) {
       url = android;
 	  };  /* Call window.openStore(anyUrl) from your game */
