@@ -869,7 +869,7 @@ export default class MainScene extends Phaser.Scene {
     }
 }
 
-// Global functions (required for ad network)
+// Global functions
 window.gameStart = function() {
     parent.postMessage("start", "*");
     console.log("game started");
@@ -882,4 +882,8 @@ window.gameClose = function() {
 
 window.muteGameSound = function(scene) {
     scene.sound.setMute(true);
+};
+
+window.unmuteGameSound = function(scene) {
+    scene.sound.setMute(false);
 };
