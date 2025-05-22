@@ -376,15 +376,28 @@ export default class MainScene extends Phaser.Scene {
 
     // Setup event listeners
     setupEventListeners() {
+        // Set up event listeners for orientation change
+        this.scale.on('orientationchange', (e) => {
+            switch(e) {
+                case 'portrait-primary':
+                    this.scale.displaySize.aspectRatio = this.gameHeight/this.gameWidth;
+                    this.scale.setGameSize(this.gameHeight,this.gameWidth);
+                    break;
+                case 'landscape-primary':
+                    this.scale.displaySize.aspectRatio = this.gameWidth/this.gameHeight;
+                    this.scale.setGameSize(this.gameWidth,this.gameHeight);
+                    break;
+                default:  
+            }
+        });
         // Set up event listeners for user interactions
-        this.scale.on('resize', this.resize, this);
-        //window.addEventListener('resize', () => this.resize()); <-- Likely redundant
+        this.scale.on('resize', () => this.resize());
+        // Set up event listeners for pointer down
         this.input.on('pointerdown', this.handleGlobalClick, this);
+        // Set up event listeners for CTA click
         this.CTA.on('pointerdown', this.handleCTAClick, this);
-        
         // Add event listener for ad viewable change (for Unity ads)
         window.addEventListener('adViewableChange', this.handleAdViewableChange.bind(this));
-
         // Listen for ad viewable state changes
         if (typeof FbPlayableAd !== 'undefined') {
             FbPlayableAd.onAdViewableChange.bind(this);
