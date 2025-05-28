@@ -81,6 +81,17 @@ export default class MainScene extends Phaser.Scene {
 
         // Initialize Audio
         // e.g. this.audioFile = this.sound.add('audioFile', { loop: false, volume: 1.5 });
+         // Make scene globally accessible for MRAID audio control
+        window.gameScene = this;
+        
+        // Apply initial audio state if it was set before game initialized
+        if (window.initialAudioMuted !== undefined) {
+            if (window.initialAudioMuted) {
+                window.muteGameSound(this);
+            } else {
+                window.unmuteGameSound(this);
+            }
+        }
     }
 
     // Method to initialize game after MRAID is ready
@@ -894,9 +905,15 @@ window.gameClose = function() {
 };
 
 window.muteGameSound = function(scene) {
-    scene.sound.setMute(true);
+    if (scene && scene.sound) {
+        scene.sound.setMute(true);
+        console.log("Game audio muted via MRAID");
+    }
 };
 
 window.unmuteGameSound = function(scene) {
-    scene.sound.setMute(false);
+    if (scene && scene.sound) {
+        scene.sound.setMute(false);
+        console.log("Game audio unmuted via MRAID");
+    }
 };
