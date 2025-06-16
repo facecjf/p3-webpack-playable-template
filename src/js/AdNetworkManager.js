@@ -56,7 +56,7 @@ export default class AdNetworkManager {
         switch (this.adNetwork) {
             // Add any specific CTA Click logic here
             case 'development':
-                console.log('Development: CTA Clicked');
+                window.open(url);
                 break;
             case 'google':
                 window.open(window.globalThis.clickTag);
