@@ -20,7 +20,16 @@
         margin: 0 !important;
         padding: 0 !important;
       }
-    </style>    
+    </style>
+    <script>
+      var userAgent = navigator.userAgent || navigator.vendor;
+      var url = 'https://apps.apple.com/us/app/zynga-poker-texas-holdem/id354902315'; // IOS
+      var android = 'https://play.google.com/store/apps/details?id=com.zynga.livepoker'; // ANDROID
+      if (/android/i.test(userAgent)) {
+      url = android;
+      };
+    </script>   
+	  
   </head>
 
   <body>
