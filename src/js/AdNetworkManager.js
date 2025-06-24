@@ -59,7 +59,14 @@ export default class AdNetworkManager {
                 window.open(url);
                 break;
             case 'google':
-                window.open(window.globalThis.clickTag);
+               if (!window.ExitApi) {
+                    console.warn("ExitApi not defined");
+                    console.warn(
+                      "ExitApi.exit() called in development environment! Test it on: https://h5validator.appspot.com/adwords/asset"
+                    );
+                    return;
+                  }
+                  window.ExitApi.exit();
                 break;
             case 'ironsource':
                 mraid.open(url); 
