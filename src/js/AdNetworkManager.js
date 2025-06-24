@@ -65,13 +65,23 @@ export default class AdNetworkManager {
                 mraid.open(url); 
                 break;
             case 'facebook':
+                FbPlayableAd.onCTAClick();
+                break;
             case 'moloco':
+                FbPlayableAd.onCTAClick();
+                break;
             case 'tencent':
                 FbPlayableAd.onCTAClick();
                 break;
             case 'applovin':
+                mraid.open();
+                break;
             case 'liftoff':
+                mraid.open();
+                break;
             case 'adcolony':
+                mraid.open();
+                break;
             case 'chartboost':
                 mraid.open();
                 break;
