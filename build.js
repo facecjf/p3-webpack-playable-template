@@ -87,7 +87,7 @@ module.exports = {
         console.log(`Building for ${network}...`);
 
         // Determine if this network requires inlining
-        const requiresInlining = [ /*'facebook', 'moloco', */ 'google', 'tencent'].includes(network);
+        const requiresInlining = [ /*'facebook', 'moloco', 'google', */ 'tencent'].includes(network);
 
         try {
             // Create webpack config for this network
