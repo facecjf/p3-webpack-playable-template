@@ -409,6 +409,8 @@ export default class MainScene extends Phaser.Scene {
         this.CTA.on('pointerdown', this.handleCTAClick, this);
         // Add event listener for ad viewable change (for Unity ads)
         window.addEventListener('adViewableChange', this.handleAdViewableChange.bind(this));
+        // Listen for MRAID audio volume changes
+        //window.addEventListener('mraidAudioVolumeChange', this.handleMraidAudioChange.bind(this));
        
     }
 
