@@ -56,10 +56,15 @@ export default class AdNetworkManager {
         switch (this.adNetwork) {
             // Add any specific CTA Click logic here
             case 'development':
-                window.open(url);
+                if (typeof url !== 'undefined') {
+                    window.open(url);
+                } else {
+                    console.log('Development: No URL defined');
+                }
                 break;
             case 'google':
-               if (!window.ExitApi) {
+                //window.open(window.globalThis.clickTag);
+                if (!window.ExitApi) {
                     console.warn("ExitApi not defined");
                     console.warn(
                       "ExitApi.exit() called in development environment! Test it on: https://h5validator.appspot.com/adwords/asset"
@@ -67,6 +72,22 @@ export default class AdNetworkManager {
                     return;
                   }
                   window.ExitApi.exit();
+                break;
+            case 'adikteev':
+                // Fire the click pixel
+                if (typeof AK_CLICK_PIXEL_URL !== 'undefined') {
+                    const img = new Image();
+                    img.src = AK_CLICK_PIXEL_URL;
+                }
+                // Open the destination URL
+                if (typeof AK_CLICK_DESTINATION_URL !== 'undefined') {
+                    mraid.open(AK_CLICK_DESTINATION_URL);
+                } else {
+                    mraid.open(); // Fallback
+                }
+                break;
+            case 'aarki':
+                window.open();
                 break;
             case 'ironsource':
                 mraid.open(url); 
@@ -76,7 +97,7 @@ export default class AdNetworkManager {
                 break;
             case 'moloco':
                 FbPlayableAd.onCTAClick();
-                break;
+                break;  
             case 'tencent':
                 FbPlayableAd.onCTAClick();
                 break;
@@ -99,7 +120,8 @@ export default class AdNetworkManager {
                 mraid.open(url);
                 break;
             case 'smadex':
-                window.open(window.location.href = '{$CLICK_TRACK_URL$}');
+                // Only open the app store for non-Facebook builds
+                //window.open(window.location.href = '{$CLICK_TRACK_URL$}');
                 break;
             case 'mintegral':
                 window.gameEnd && window.gameEnd();
@@ -256,7 +278,7 @@ export default class AdNetworkManager {
     
     // Handle viewable change events for Unity & ironsource ads
     handleViewableChange(viewable) {
-        if (this.adNetwork !== 'unity' && this.adNetwork !== 'ironsource') return;
+        if (this.adNetwork !== 'unity' && this.adNetwork !== 'ironsource' /*&& this.adNetwork !== 'facebook'*/) return;
         
         this.isAdVisible = viewable;
         
