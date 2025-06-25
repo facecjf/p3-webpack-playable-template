@@ -47,7 +47,7 @@ module.exports = {
     mode: 'production',
     entry: './src/index.js',
     output: {
-        filename: "playable.js",
+        filename: ${network === 'adikteev' ? '"creative.js"' : '"playable.js"'},
         path: path.resolve(__dirname, 'dist', '${prefix}_${network}'),
         clean: true
     },
@@ -89,7 +89,7 @@ module.exports = {
         console.log(`Building for ${network}...`);
 
         // Determine if this network requires inlining
-        const requiresInlining = [/*'facebook', 'moloco', 'google',*/ 'tencent', 'adikteev'].includes(network);
+        const requiresInlining = [/*'facebook', 'moloco', 'google',*/ 'tencent'].includes(network);
 
         try {
             // Create webpack config for this network
@@ -129,11 +129,23 @@ module.exports = {
                 }
             }
 
+            // After the webpack build completes, add this to copy style.css for adikteev:
+            if (network === 'adikteev') {
+                const styleSrcPath = path.join(templateDir, 'adikteev', 'style.css');
+                const styleDestPath = path.join(buildDir, `${prefix}_adikteev`, 'style.css');
+                if (fs.existsSync(styleSrcPath)) {
+                    fs.copyFileSync(styleSrcPath, styleDestPath);
+                    console.log('style.css copied to build directory for adikteev.');
+                } else {
+                    console.warn('style.css not found for adikteev.');
+                }
+            }
+
             // Embed the compiled script into index.html for specified networks
-            if (!requiresInlining) {
+            if (!requiresInlining && network !== 'adikteev') {
                 const buildPath = path.join(buildDir, `${prefix}_${network}`);
                 const indexPath = path.join(buildPath, 'index.html');
-                const scriptPath = path.join(buildPath, 'playable.js');
+                const scriptPath = path.join(buildPath, network === 'adikteev' ? 'creative.js' : 'playable.js');
 
                 if (fs.existsSync(indexPath) && fs.existsSync(scriptPath)) {
                     let indexContent = fs.readFileSync(indexPath, 'utf8');
