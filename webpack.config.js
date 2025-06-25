@@ -36,7 +36,9 @@ module.exports = (env, argv) => {
         CANVAS_RENDERER: JSON.stringify(true),
         WEBGL_RENDERER: JSON.stringify(true),
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
-        'process.env.AD_NETWORK': JSON.stringify(process.env.AD_NETWORK || 'default')
+        'process.env.AD_NETWORK': JSON.stringify(process.env.AD_NETWORK || 'default'),
+        // Add a flag specifically for Facebook builds
+        'IS_FACEBOOK_BUILD': JSON.stringify(process.env.AD_NETWORK === 'facebook')
       }),
       // Disable for .js only file Build
       new HtmlWebpackPlugin({
