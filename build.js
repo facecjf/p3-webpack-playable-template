@@ -5,8 +5,10 @@ const readline = require('readline');
 
 const adNetworks = [
     'development' //,'chartboost',
-    //  'adcolony','applovin', 'bigabid', 'facebook', 'google', 'ironsource',
-    //  'liftoff', 'mintegral', 'moloco', 'unity', 'vungle', 'tiktok', 'smadex'
+    // 'adcolony','applovin', 'bigabid', 'facebook', 'google',
+    // 'liftoff', 'mintegral', 'moloco', 'unity', 'vungle', 'tiktok', 'smadex'
+    // 'adikteev', 'aarki',
+    // 'ironsource'
 ];
 
 const buildDir = path.join(__dirname, 'dist');
@@ -87,7 +89,7 @@ module.exports = {
         console.log(`Building for ${network}...`);
 
         // Determine if this network requires inlining
-        const requiresInlining = [ /*'facebook', 'moloco', 'google', */ 'tencent'].includes(network);
+        const requiresInlining = [/*'facebook', 'moloco', 'google',*/ 'tencent', 'adikteev'].includes(network);
 
         try {
             // Create webpack config for this network
