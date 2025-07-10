@@ -675,7 +675,7 @@ export default class MainScene extends Phaser.Scene {
         }
         this.updateUIHandPosition();
         // this.startTutTextTween();
-        console.log('inactivity timer reset');
+        console.log('%c>Inactivity Timer: reset', 'color: #000; background: #f87c00;');
         this.isInactivity = false;
         this.time.removeEvent(this.inactivityEvent);
         this.inactivityEvent = null;
@@ -686,7 +686,7 @@ export default class MainScene extends Phaser.Scene {
     resetInactivityTimer() {
         this.time.removeEvent(this.inactivityEvent);
         this.inactivityEvent = this.time.addEvent({ delay: this.inactiveTime, callback: this.inactivityTimer, callbackScope: this });
-        console.log('inactivity timer started');
+        console.log('%c>Inactivity Timer: started', 'color: #000; background: #f87c00;');
         this.isInactivity = true;
     }
     
@@ -700,13 +700,13 @@ export default class MainScene extends Phaser.Scene {
             }
         } else if (!this.firstClick && !this.gameOver) {
             this.firstClick = true;
-            console.log('first click!');
+            console.log('%c>First Click', 'color: #FFF; background: #ab24f8;');
             this.removeTweens();
             this.stopTutTextTween();
             this.resetInactivityTimer();
             this.adNetworkManager.handleBigabidEngagement();
         } else {
-            console.log('click / ui hand reset works!');
+            //console.log('click / ui hand reset works!');
             this.removeTweens();
             this.stopTutTextTween();
             this.resetInactivityTimer();
@@ -864,23 +864,23 @@ export default class MainScene extends Phaser.Scene {
 
         // Main Game Update Loop - Used for setting game phases
         if (this.gamePhase == 0 && !this.gameOver) {
-            console.log('Phase 1 Tutorial');
+            console.log('%c>Phase 1 Tutorial', 'color: #FFF; background: #ab24f8;');
             // Notify ad network that game ad is starting
             this.startGameAd();
             this.gamePhase++;
         } else if (this.gamePhase == 1 && !this.gameOver) {
             if (this.firstClick) {
-                console.log('Phase 2 Start');
+                console.log('%c>Phase 2 Start', 'color: #FFF; background: #ab24f8;');
                 this.startGame = true;
                 this.gamePhase++;
             }
         } else if (this.gamePhase == 2 && this.gameOver) {
-            console.log('Phase 3 Game Over EM');
+            console.log('%c>Phase 3 Game Over EM', 'color: #FFF; background: #ab24f8;');
             this.endGameAd();
             this.gamePhase++;
         } else if (this.gamePhase == 3 && this.gameOver) {
             if (this.ctaClicked) {
-                console.log('Phase 4 Return Modual');
+                console.log('%c>Phase 4 Return Modual', 'color: #FFF; background: #ab24f8;');
                 this.gamePhase++;
             }
         }
