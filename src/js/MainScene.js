@@ -670,8 +670,11 @@ export default class MainScene extends Phaser.Scene {
     // Handle inactivity
     inactivityTimer() {
         // Handle inactivity
-        if (this.gameOver) {
+       if (this.gameOver) {
             this.time.removeEvent(this.inactivityEvent);
+            this.inactivityEvent = null;
+            this.isInactivity = false;
+            console.log('%c>Inactivity Timer: stopped', 'color: #000; background: #f87c00;');
         }
         this.updateUIHandPosition();
         // this.startTutTextTween();
