@@ -59,7 +59,7 @@ export default class AdNetworkManager {
                 if (typeof url !== 'undefined') {
                     window.open(url);
                 } else {
-                    console.log('Development: No URL defined');
+                    console.log('AdNetwork Manager: Development: No URL defined');
                 }
                 break;
             case 'google':
@@ -121,7 +121,7 @@ export default class AdNetworkManager {
                 break;
             case 'smadex':
                 // Only open the app store for non-Facebook builds
-                //window.open(window.location.href = '{$CLICK_TRACK_URL$}');
+                window.open(window.location.href = '{$CLICK_TRACK_URL$}');
                 break;
             case 'mintegral':
                 window.gameEnd && window.gameEnd();
@@ -139,7 +139,7 @@ export default class AdNetworkManager {
                 console.log('Bigabid: click, complete, and final_url fired');
                 break;
             default:
-                console.log('Default CTA click');
+                console.log('AdNetwork Manager: Development CTA click');
         }
     }
 
@@ -158,8 +158,11 @@ export default class AdNetworkManager {
                 this.fireBigabidMacro('final_url');
                 console.log('Bigabid: complete and final_url fired');
                 break;
+            case 'development':
+                console.log('AdNetwork Manager: Development end game ad');
+                break;
             default:
-                console.log('Default end game ad');
+                console.log('AdNetwork Manager: Development end game ad');
         }
     }
 
@@ -184,8 +187,11 @@ export default class AdNetworkManager {
             case 'bigabid':
                 this.fireBigabidMacro('game_viewable');
                 break;
+            case 'development':
+                console.log('AdNetwork Manager: Development start game ad');
+                break;
             default:
-                console.log('Default start game ad');
+                console.log('AdNetwork Manager: Development start game ad');
         }
     }
 
@@ -261,8 +267,11 @@ export default class AdNetworkManager {
                 this.fireBigabidMacro('mraid_viewable');
                 console.log('Bigabid: mraid_viewable fired');
                 break;
+            case 'development':
+                console.log('AdNetwork Manager: Development loaded game ad');
+                break;
             default:
-                console.log('Default loaded game ad');
+                console.log('AdNetwork Manager: Development loaded game ad');
         }
     }
 
@@ -271,8 +280,11 @@ export default class AdNetworkManager {
             case 'ironsource':
                 mraid.setVolume(volume);
                 break;
+            case 'development':
+                console.log('AdNetwork Manager: Development audio volume change');
+                break;
             default:
-                console.log('Default audio volume change');
+                console.log('AdNetwork Manager: Development audio volume change');
         }
     }
     
