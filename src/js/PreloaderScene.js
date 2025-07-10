@@ -14,7 +14,7 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     preload() {
-        console.log('%cSCENE::Preload', 'color: #fff; background: #ff1462;')
+        console.log('%cSCENE::Preload Start', 'color: #fff; background: #ff1462;')
         
         const audioFiles = {
             sound_fx: require('../audio/sound_fx.mp3')
@@ -129,6 +129,7 @@ export default class PreloaderScene extends Phaser.Scene {
             (this.countDecodedAudio >= this.allAudio) && 
             (this.countDecodedTexture >= this.allTextures) &&
             (this.countLoadedSpritesheets >= this.allSpritesheets)) {
+            console.log('%cSCENE::Preload Complete', 'color: #fff; background: #ff1462;')
             console.log('%cSCENE::Loaded', 'color: #000; background: #0f0;');
             this.scene.start("Main");
         }
