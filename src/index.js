@@ -12,6 +12,9 @@ const gameConfig = {
         width: window.innerWidth,
         height: window.innerHeight
     },
+    input: {
+        windowEvents: false  // Disable window-level events to avoid window.top usage
+    },
     scene: null
 };
 
