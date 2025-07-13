@@ -25,14 +25,6 @@ export default class MainScene extends Phaser.Scene {
         this.logoScale = 0.45; // starting logo scale
         this.ctaScale = 0.45; // starting cta scale
 
-        //properties for UI hand positions
-        this.handAngle = 0;
-        this.handAngleOpo = 0;
-        this.uiHandStartX = 0;
-        this.uiHandStartY = 0;
-        this.uiHandEndX = 0;
-        this.uiHandEndY = 0;
-
         // Delta time handling
         this.targetFPS = 60;
         this.deltaMultiplier = 1;
@@ -391,16 +383,19 @@ export default class MainScene extends Phaser.Scene {
 
     // Handle game resize events
     resize() {
-        
+        // Pause scene
         this.scene.pause();
+
         // reset inactivity timer
         if (!this.gameOver && this.isInactivity) {
             this.inactivityTimer();
             this.isInactivity = false;
         }
+
         // stop ember emitter
         this.stopEmberEmitter();
         
+        // Update responsive settings
         this.responsiveSettings = new ResponsiveSettings.default(this);
         // Update local references
         this.gameWidth = this.responsiveSettings.gameWidth;
@@ -411,9 +406,16 @@ export default class MainScene extends Phaser.Scene {
         this.isPortrait = this.responsiveSettings.isPortrait;
         this.isLandscape = this.responsiveSettings.isLandscape;
 
+        // Resize background
         this.resizeBackground();
+
+        // Reposition handler
         this.repositionHandler();
-        this.uiHand.updateUIHandPosition();
+        
+        // Update UI hand position
+        if (!this.gameOver) {
+            this.uiHand.updateUIHandPosition();
+        }
 
         // create ember emitter
         this.createEmberEmitter();
@@ -421,6 +423,7 @@ export default class MainScene extends Phaser.Scene {
         // Resume the scene after resizing
         this.scene.resume();
 
+        // Resume sound
         if (!this.gameOver) {
             this.resumeSoundObjects();
         }
@@ -497,14 +500,14 @@ export default class MainScene extends Phaser.Scene {
         this.uiHand.uiHandEndY = this.centerY + handOffsetY;
 
         // If the UI hand controller exists, update its position
-        if (this.uiHandController) {
-            this.uiHandController.setPosition(
-                this.uiHandStartX,
-                this.uiHandStartY,
-                this.uiHandEndX,
-                this.uiHandEndY
+        if (this.uiHand.uiHandController) {
+            this.uiHand.uiHandController.setPosition(
+                this.uiHand.uiHandStartX,
+                this.uiHand.uiHandStartY,
+                this.uiHand.uiHandEndX,
+                this.uiHand.uiHandEndY
             );
-            this.uiHandController.resize(this.scaleFactor);
+            this.uiHand.uiHandController.resize(this.scaleFactor);
         }
     }
 
@@ -526,15 +529,6 @@ export default class MainScene extends Phaser.Scene {
         //this.tutBG.setVisible(false);
         this.tutText.setVisible(false);
     }
-
-    // Update CTA text position and scale
-    // updateCTATextPosition() {
-    //     if (this.ctaText && this.CTA) {
-    //         const ctaCenterX = this.CTA.x - (this.CTA.displayWidth * (-0.5 + this.CTA.originX));
-    //         this.ctaText.setPosition(ctaCenterX, this.CTA.y);
-    //         this.ctaText.setScale(this.CTA.scale * 0.8);
-    //     }
-    // }
 
     // Handle CTA click
     handleCTAClick() {
@@ -558,14 +552,6 @@ export default class MainScene extends Phaser.Scene {
         }
         // Pause all sounds
         this.sound.pauseAll();
-    }
-
-    // Remove UI hand tweens
-    removeTweens() {
-        if (this.uiHandController) {
-            this.uiHandController.hide();
-            this.uiHandController.stopTween();
-        }
     }
 
     // Handle inactivity
@@ -605,13 +591,13 @@ export default class MainScene extends Phaser.Scene {
         } else if (!this.firstClick && !this.gameOver) {
             this.firstClick = true;
             console.log('%c>First Click', 'color: #FFF; background: #ab24f8;');
-            this.removeTweens();
+            this.uiHand.removeUIHandTweens();
             this.stopTutTextTween();
             this.resetInactivityTimer();
             this.adNetworkManager.handleBigabidEngagement();
         } else {
             //console.log('click / ui hand reset works!');
-            this.removeTweens();
+            this.uiHand.removeUIHandTweens();
             this.stopTutTextTween();
             this.resetInactivityTimer();
         }
@@ -621,7 +607,7 @@ export default class MainScene extends Phaser.Scene {
     transitionEnd() {
         // Stop any ongoing game logic
         this.gameOver = true;
-        this.removeTweens();
+        this.uiHand.removeUIHandTweens();
 
         // Hide tutorial and timer elements
         //this.tutBG.setVisible(false);
@@ -658,7 +644,7 @@ export default class MainScene extends Phaser.Scene {
         }
         
         this.endModual();
-        this.removeTweens();
+        this.uiHand.removeUIHandTweens();
         
         if (!this.firstClick) {
             this.gamePhase++;
@@ -701,28 +687,6 @@ export default class MainScene extends Phaser.Scene {
     startGameAd() {
         this.adNetworkManager.startGameAd();
     }
-
-    // Set up CTA button tween animation
-    // setupCTATween() {
-    //     // Stop any existing tween
-    //     if (this.ctaTween) {
-    //         this.ctaTween.stop();
-    //     }
-
-    //     // Create a new tween
-    //     this.ctaTween = this.tweens.add({
-    //         targets: this.CTA,
-    //         scaleX: this.CTA.scaleX * 1.1,
-    //         scaleY: this.CTA.scaleY * 1.1,
-    //         duration: 500,
-    //         yoyo: true,
-    //         repeat: -1,
-    //         ease: 'Sine.easeInOut',
-    //         onUpdate: () => {
-    //             this.updateCTATextPosition();
-    //         }
-    //     });
-    // }
 
     // Get localized text based on current language
     getLocalizedText(key) {

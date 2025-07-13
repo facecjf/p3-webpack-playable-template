@@ -98,4 +98,12 @@ export default class UIHand {
                 }
             }
         }
+
+        // Remove UI hand tweens
+    removeUIHandTweens() {
+        if (this.uiHandController) {
+            this.uiHandController.hide();
+            this.uiHandController.stopTween();
+        }
+    }
 }
