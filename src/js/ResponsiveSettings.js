@@ -32,7 +32,8 @@ export class ResponsiveSettings {
 
         // Determine if the game is in portrait mode (including square viewports)
         this.isPortrait = this.gameHeight >= this.gameWidth;
-        // this.isSquare = this.gameWidth === this.gameHeight;
+        this.isLandscape = this.gameWidth > this.gameHeight;
+        // this.isSquare = this.gameWidth === this.gameHeight || this.gameWidth === this.gameHeight;
         // this.isLandscape = this.gameWidth > this.gameHeight;
         
         // Calculate scaling factors
@@ -43,6 +44,8 @@ export class ResponsiveSettings {
         if (this.deviceType === 'phone') {
             this.scaleFactor = this.isPortrait ? baseScaleX : baseScaleY;
         } else if (this.deviceType === 'tablet') {
+            this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.85;
+        } else if (this.deviceType === 'smallPhone') {
             this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.85;
         } else { // square
             this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.5;
@@ -65,9 +68,12 @@ export class ResponsiveSettings {
         if (Math.abs(aspectRatio - 1) < 0.1) {
             console.log('Device: square');
             return 'square';
-        } else if ((this.gameWidth >= 768 && this.gameHeight >= 1024) || (this.gameWidth >= 1024 && this.gameHeight >= 768)) {
+        } else if ((this.gameWidth >= 712 && this.gameHeight >= 1024) || (this.gameWidth >= 1024 && this.gameHeight >= 712)) {
             console.log('Device: tablet');
             return 'tablet';
+        } else if (this.gameWidth <= 320 && this.gameHeight <= 480) {
+            console.log('Device: smallPhone');
+            return 'smallPhone';
         } else {
             console.log('Device: phone');
             return 'phone';

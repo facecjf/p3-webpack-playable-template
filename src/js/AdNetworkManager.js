@@ -121,6 +121,7 @@ export default class AdNetworkManager {
                 break;
             case 'smadex':
                 // Only open the app store for non-Facebook builds
+                // NOTE: Disable for Facebook & Moloco builds
                 window.open(window.location.href = '{$CLICK_TRACK_URL$}');
                 break;
             case 'mintegral':

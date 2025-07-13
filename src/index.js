@@ -8,6 +8,7 @@ const gameConfig = {
     backgroundColor: '#000000',
     scale: {
         mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
         parent: 'phaser-example',
         width: window.innerWidth,
         height: window.innerHeight

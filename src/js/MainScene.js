@@ -50,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
         this.centerY = this.responsiveSettings.centerY;
         this.scaleFactor = this.responsiveSettings.scaleFactor;
         this.isPortrait = this.responsiveSettings.isPortrait;
+        this.isLandscape = this.responsiveSettings.isLandscape;
         
         // Load language data from cache
         this.languageData = this.cache.json.get('languages');
@@ -509,6 +510,7 @@ export default class MainScene extends Phaser.Scene {
         this.centerY = this.responsiveSettings.centerY;
         this.scaleFactor = this.responsiveSettings.scaleFactor;
         this.isPortrait = this.responsiveSettings.isPortrait;
+        this.isLandscape = this.responsiveSettings.isLandscape;
 
         this.resizeBackground();
         this.repositionHandler();
