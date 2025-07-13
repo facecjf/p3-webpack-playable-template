@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import MainScene from './MainScene.js';
 
 export default class PreloaderScene extends Phaser.Scene {
     constructor() {

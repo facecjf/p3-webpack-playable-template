@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import Phaser, { Textures } from 'phaser';
 import PreloaderScene from './js/PreloaderScene.js';
 import MainScene from './js/MainScene.js';
 
@@ -16,6 +16,12 @@ const gameConfig = {
     input: {
         windowEvents: false  // Disable window-level events to avoid window.top usage
     },
+    // physics: {
+    //     default: 'arcade',
+    //     arcade: {
+    //         debug: true
+    //     }
+    // },
     scene: null
 };
 

@@ -6,23 +6,26 @@ export default class UIHand {
         this.uiHandStartY = this.scene.uiHandStartY;
         this.uiHandEndX = this.scene.uiHandEndX;
         this.uiHandEndY = this.scene.uiHandEndY;
-        this.scaleFactor = 0;
+        this.scaleFactor = this.scene.scaleFactor;
         this.handAngle = 0;
         this.handAngleOpo = 0;
         this.uiHandController = null;
     }
 
-    setPosition(uiHandStartX, uiHandStartY, uiHandEndX, uiHandEndY) {
-        this.uiHandStartX = uiHandStartX;
-        this.uiHandStartY = uiHandStartY;
-        this.uiHandEndX = uiHandEndX;
-        this.uiHandEndY = uiHandEndY;
+    // Set initial UI hand position
+    setInitialPosition(startX, startY, endX, endY) {
+        // Set initial UI hand positions
+        this.uiHandStartX = startX;
+        this.uiHandStartY = startY;
+        this.uiHandEndX = endX;
+        this.uiHandEndY = endY;
     }
+
      // Create and set up the UI hand for guiding user interactions
      createUIHand() {
         const uiHand = this.scene.add.image(this.uiHandStartX, this.uiHandStartY, 'uihand')
                 .setDepth(20)
-                .setScale(this.scene.scaleFactor);
+                .setScale(this.scaleFactor);
             
             let currentTween = null;
     
@@ -91,7 +94,7 @@ export default class UIHand {
                     this.uiHandEndX,
                     this.uiHandEndY
                 );
-                this.uiHandController.resize(this.scene.scaleFactor);
+                this.uiHandController.resize(this.scaleFactor);
     
                 if (!this.gameOver) {
                     this.uiHandController.show();

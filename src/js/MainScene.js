@@ -34,6 +34,7 @@ export default class MainScene extends Phaser.Scene {
     // Create the scene
     create() {
         console.log('%cSCENE::Main', 'color: #fff; background: #ab24f8;')
+
         // Initialize ResponsiveSettings with scene reference
         this.responsiveSettings = new ResponsiveSettings.default(this);
         
@@ -60,6 +61,7 @@ export default class MainScene extends Phaser.Scene {
                 }
             };
         }
+
         // Initialize delta time handling
         this.initializeDeltaTimeHandling();
 
@@ -70,9 +72,7 @@ export default class MainScene extends Phaser.Scene {
         this.initializeGameVariables();
         this.createGameObjects();
         this.setupEventListeners();
-        this.uiHand = new UIHand.default(this);
-        this.uiHand.setPosition(this.uiHandStartX, this.uiHandStartY, this.uiHandEndX, this.uiHandEndY);
-        this.uiHand.createUIHand();
+
         // Notify ad network that game ad is loaded
         this.adNetworkManager.loadedGameAd();
 
@@ -100,7 +100,6 @@ export default class MainScene extends Phaser.Scene {
         // If there's any delayed initialization that should only happen after MRAID is ready, do it here
     }
 
-    
     // Initialize various game state variables
     initializeGameVariables() {
         // define specific game variable after start outside of the constructor ex: this.variable = true;
@@ -133,16 +132,19 @@ export default class MainScene extends Phaser.Scene {
         // Logo and CTA
         this.setupUI();
 
+        // Initialize UI hand
+        this.uiHand = new UIHand.default(this);
+        this.uiHand.setInitialPosition(
+            this.centerX - 120 * this.scaleFactor,
+            this.centerY + 120 * this.scaleFactor,
+            this.centerX + 120 * this.scaleFactor,
+            this.centerY + 120 * this.scaleFactor
+        );
+        this.uiHand.createUIHand();
+
         // Create tutorial message
         this.createTutorialMessage();
-
-        // Set initial UI hand positions
-        this.uiHandStartX = this.centerX - 120 * this.scaleFactor;
-        this.uiHandStartY = this.centerY + 120 * this.scaleFactor;
-        this.uiHandEndX = this.centerX + 120 * this.scaleFactor;
-        this.uiHandEndY = this.centerY + 120 * this.scaleFactor;
-        //this.uiHand.setPosition(this.uiHandStartX, this.uiHandStartY, this.uiHandEndX, this.uiHandEndY);
-
+        
         // Overlay for End Card
         this.overlay = this.add.graphics();
 
@@ -411,7 +413,7 @@ export default class MainScene extends Phaser.Scene {
 
         // Reposition handler
         this.repositionHandler();
-        
+
         // Update UI hand position
         if (!this.gameOver) {
             this.uiHand.updateUIHandPosition();
