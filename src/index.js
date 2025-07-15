@@ -1,4 +1,4 @@
-import Phaser, { Textures } from 'phaser';
+import Phaser from 'phaser';
 import PreloaderScene from './js/PreloaderScene.js';
 import MainScene from './js/MainScene.js';
 
