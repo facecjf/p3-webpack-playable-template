@@ -403,7 +403,8 @@ export default class MainScene extends Phaser.Scene {
             }
         });
         // Set up event listeners for user interactions
-        this.scale.on('resize', () => this.resize());
+        const debouncedResize = this.debounce(() => this.resize(), 25);
+        this.scale.on('resize', debouncedResize);
         // Set up event listeners for pointer down
         this.input.on('pointerdown', this.handleGlobalClick, this);
         // Set up event listeners for CTA click
@@ -413,6 +414,15 @@ export default class MainScene extends Phaser.Scene {
         // Listen for MRAID audio volume changes
         //window.addEventListener('mraidAudioVolumeChange', this.handleMraidAudioChange.bind(this));
        
+    }
+
+    // Debounce function
+    debounce(fn, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => fn(...args), delay);
+        };
     }
 
     // Handle ad viewable change events (for Unity ads)
