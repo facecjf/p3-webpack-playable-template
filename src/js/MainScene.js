@@ -321,45 +321,35 @@ export default class MainScene extends Phaser.Scene {
     // Handle ad viewable change events (for Unity ads)
     handleAdViewableChange(event) {
         const isViewable = event.detail.viewable;
-    
         if (isViewable) {
             // Resume game when ad becomes viewable
             if (this.scene.isPaused()) {
                 this.scene.resume();
-                
                 // Resume any tweens or animations
                 if (this.tutTextTween && !this.tutTextTween.isPlaying()) {
                     this.tutTextTween.resume();
                 }
-                
                 // Resume any particle emitters
                 if (this.emberEmitter && this.emberEmitter.paused) {
                     this.emberEmitter.resume();
                 }
-                
                 // Resume sound
-                 this.sound.resumeAll();
-                
+                this.sound.resumeAll();
                 console.log('Game resumed due to ad becoming viewable');
             }
         } else {
             // Pause game when ad is not viewable
             if (!this.scene.isPaused()) {
-                
                 this.scene.pause();
-                
                 // Pause any tweens or animations
                 if (this.tutTextTween && this.tutTextTween.isPlaying()) {
                     this.tutTextTween.pause();
                 }
-                
                 // Pause any particle emitters
                 if (this.emberEmitter && !this.emberEmitter.paused) {
                     this.emberEmitter.pause();
                 }
-
-                this.sound.pauseAll();
-                
+                this.sound.pauseAll();           
                 console.log('Game paused due to ad not being viewable');
             }
         }
@@ -369,14 +359,10 @@ export default class MainScene extends Phaser.Scene {
     pauseSoundObjects() {
         // Store the playing state of each sound before pausing
         this.soundStates = {
-            
-            bgmusic: this.bgmusic && this.bgmusic.isPlaying,
-            
+            bgmusic: this.bgmusic && this.bgmusic.isPlaying,   
         };
-        
         // Pause all sounds
         this.sound.pauseAll();
-        
         // Additional handling for any sounds that might need special treatment
         if (this.bgmusic) {
             this.bgmusic.pause();
@@ -387,9 +373,7 @@ export default class MainScene extends Phaser.Scene {
     resumeSoundObjects() {
         // Only resume sounds that were playing when paused
         if (this.soundStates) {
-            
             if (this.soundStates.bgmusic && this.bgmusic) this.bgmusic.resume();
-            
         }
     }
 
@@ -406,28 +390,9 @@ export default class MainScene extends Phaser.Scene {
 
         // stop ember emitter
         this.stopEmberEmitter();
-        
-        // Update responsive settings
-        this.responsiveSettings = new ResponsiveSettings.default(this);
-        // Update local references
-        this.gameWidth = this.responsiveSettings.gameWidth;
-        this.gameHeight = this.responsiveSettings.gameHeight;
-        this.centerX = this.responsiveSettings.centerX;
-        this.centerY = this.responsiveSettings.centerY;
-        this.scaleFactor = this.responsiveSettings.scaleFactor;
-        this.isPortrait = this.responsiveSettings.isPortrait;
-        this.isLandscape = this.responsiveSettings.isLandscape;
-
-        // Resize background
-        this.resizeBackground();
 
         // Reposition handler
         this.repositionHandler();
-
-        // Update UI hand position
-        if (!this.gameOver) {
-            this.uiHand.updateUIHandPosition();
-        }
 
         // create ember emitter
         this.createEmberEmitter();
@@ -458,6 +423,20 @@ export default class MainScene extends Phaser.Scene {
 
     // Reposition handler
     repositionHandler() {
+        // Update responsive settings
+        this.responsiveSettings = new ResponsiveSettings.default(this);
+        // Update local references
+        this.gameWidth = this.responsiveSettings.gameWidth;
+        this.gameHeight = this.responsiveSettings.gameHeight;
+        this.centerX = this.responsiveSettings.centerX;
+        this.centerY = this.responsiveSettings.centerY;
+        this.scaleFactor = this.responsiveSettings.scaleFactor;
+        this.isPortrait = this.responsiveSettings.isPortrait;
+        this.isLandscape = this.responsiveSettings.isLandscape;
+
+        // Resize background
+        this.resizeBackground();
+        
         if (this.gameOver && this.gamePhase >= 3) {
             // End module layout
             this.repositionEndModuleAssets();
@@ -466,16 +445,20 @@ export default class MainScene extends Phaser.Scene {
             this.repositionGameAssets();
         }
 
-        // Common elements
-        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
-            .setScale(this.scaleFactor);
-        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
-            .setScale(this.scaleFactor);
+        this.repositionCommonElements();
 
         // Move this line to the end of the method
         if (!this.gameOver || this.gamePhase < 3) {
             this.uiHand.updateUIHandPosition();
         }
+    }
+
+    // Reposition common elements
+    repositionCommonElements() {
+        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
+            .setScale(this.scaleFactor);
+        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
+            .setScale(this.scaleFactor);
     }
 
     // Reposition regular game assets
