@@ -157,8 +157,10 @@ export default class MainScene extends Phaser.Scene {
         // Pause all sounds
         this.pauseSoundObjects();
 
+        // create game container
+        this.createGameContainer();
+
         // ADD CALLS TO NEW GAME METHODS HERE
-        
     }
 
     //// ADD NEW GAME METHODS HERE
@@ -168,8 +170,40 @@ export default class MainScene extends Phaser.Scene {
 
 
 
-
     //// ADD NEW GAME METHODS HERE
+
+    // create game container
+    createGameContainer() {
+        this.gameContainer = this.add.container(0, 160 * this.scaleFactor);
+        this.gameContainer.setSize(this.gameWidth, this.gameHeight - 160 * this.scaleFactor);
+
+        // create game container background
+        this.gameContainerBg = this.add.graphics().fillStyle(0x00ff00).fillRect(0, 0, this.gameContainer.width, this.gameContainer.height);
+        this.gameContainerBg.setAlpha(0.25);
+
+        // add game container background to game container
+        this.gameContainer.setDepth(0);
+        this.gameContainer.add(this.gameContainerBg);
+    }
+
+    // resize game container
+    resizeGameContainer() {
+        this.gameContainer.setPosition(0, 160 * this.scaleFactor);
+        this.gameContainer.setSize(this.gameWidth, this.gameHeight - 160 * this.scaleFactor);
+        
+        // resize game container background
+        this.gameContainerBg.setPosition(0, 0);
+        this.gameContainerBg.clear();
+        this.gameContainerBg.fillStyle(0x00ff00).fillRect(0, 0, this.gameContainer.width, this.gameContainer.height);
+        
+        // log the size of the game container
+        console.log('gameContainer.width', this.gameContainer.width);
+        console.log('gameContainer.height', this.gameContainer.height);
+        console.log('gameWidth', this.gameWidth);
+        console.log('gameHeight', this.gameHeight);
+    }
+
+
 
     // creat CTA
     setupUI() {
@@ -296,7 +330,8 @@ export default class MainScene extends Phaser.Scene {
             }
         });
         // Set up event listeners for user interactions
-        this.scale.on('resize', () => this.resize());
+        const debouncedResize = this.debounce(() => this.resize(), 50);
+        this.scale.on('resize', debouncedResize);
         // Set up event listeners for pointer down
         this.input.on('pointerdown', this.handleGlobalClick, this);
         // Set up event listeners for CTA click
@@ -308,48 +343,47 @@ export default class MainScene extends Phaser.Scene {
        
     }
 
+    // Debounce function
+    debounce(fn, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => fn(...args), delay);
+        };
+    }
+
     // Handle ad viewable change events (for Unity ads)
     handleAdViewableChange(event) {
         const isViewable = event.detail.viewable;
-    
         if (isViewable) {
             // Resume game when ad becomes viewable
             if (this.scene.isPaused()) {
                 this.scene.resume();
-                
                 // Resume any tweens or animations
                 if (this.tutTextTween && !this.tutTextTween.isPlaying()) {
                     this.tutTextTween.resume();
                 }
-                
                 // Resume any particle emitters
                 if (this.emberEmitter && this.emberEmitter.paused) {
                     this.emberEmitter.resume();
                 }
-                
                 // Resume sound
-                 this.sound.resumeAll();
-                
+                this.sound.resumeAll();
                 console.log('Game resumed due to ad becoming viewable');
             }
         } else {
             // Pause game when ad is not viewable
             if (!this.scene.isPaused()) {
-                
                 this.scene.pause();
-                
                 // Pause any tweens or animations
                 if (this.tutTextTween && this.tutTextTween.isPlaying()) {
                     this.tutTextTween.pause();
                 }
-                
                 // Pause any particle emitters
                 if (this.emberEmitter && !this.emberEmitter.paused) {
                     this.emberEmitter.pause();
                 }
-
-                this.sound.pauseAll();
-                
+                this.sound.pauseAll();           
                 console.log('Game paused due to ad not being viewable');
             }
         }
@@ -359,14 +393,10 @@ export default class MainScene extends Phaser.Scene {
     pauseSoundObjects() {
         // Store the playing state of each sound before pausing
         this.soundStates = {
-            
-            bgmusic: this.bgmusic && this.bgmusic.isPlaying,
-            
+            bgmusic: this.bgmusic && this.bgmusic.isPlaying,   
         };
-        
         // Pause all sounds
         this.sound.pauseAll();
-        
         // Additional handling for any sounds that might need special treatment
         if (this.bgmusic) {
             this.bgmusic.pause();
@@ -377,9 +407,7 @@ export default class MainScene extends Phaser.Scene {
     resumeSoundObjects() {
         // Only resume sounds that were playing when paused
         if (this.soundStates) {
-            
             if (this.soundStates.bgmusic && this.bgmusic) this.bgmusic.resume();
-            
         }
     }
 
@@ -396,28 +424,9 @@ export default class MainScene extends Phaser.Scene {
 
         // stop ember emitter
         this.stopEmberEmitter();
-        
-        // Update responsive settings
-        this.responsiveSettings = new ResponsiveSettings.default(this);
-        // Update local references
-        this.gameWidth = this.responsiveSettings.gameWidth;
-        this.gameHeight = this.responsiveSettings.gameHeight;
-        this.centerX = this.responsiveSettings.centerX;
-        this.centerY = this.responsiveSettings.centerY;
-        this.scaleFactor = this.responsiveSettings.scaleFactor;
-        this.isPortrait = this.responsiveSettings.isPortrait;
-        this.isLandscape = this.responsiveSettings.isLandscape;
-
-        // Resize background
-        this.resizeBackground();
 
         // Reposition handler
         this.repositionHandler();
-
-        // Update UI hand position
-        if (!this.gameOver) {
-            this.uiHand.updateUIHandPosition();
-        }
 
         // create ember emitter
         this.createEmberEmitter();
@@ -448,6 +457,23 @@ export default class MainScene extends Phaser.Scene {
 
     // Reposition handler
     repositionHandler() {
+        // Update responsive settings
+        this.responsiveSettings = new ResponsiveSettings.default(this);
+        // Update local references
+        this.gameWidth = this.responsiveSettings.gameWidth;
+        this.gameHeight = this.responsiveSettings.gameHeight;
+        this.centerX = this.responsiveSettings.centerX;
+        this.centerY = this.responsiveSettings.centerY;
+        this.scaleFactor = this.responsiveSettings.scaleFactor;
+        this.isPortrait = this.responsiveSettings.isPortrait;
+        this.isLandscape = this.responsiveSettings.isLandscape;
+
+        // Resize game container
+        this.resizeGameContainer();
+
+        // Resize background
+        this.resizeBackground();
+        
         if (this.gameOver && this.gamePhase >= 3) {
             // End module layout
             this.repositionEndModuleAssets();
@@ -456,16 +482,20 @@ export default class MainScene extends Phaser.Scene {
             this.repositionGameAssets();
         }
 
-        // Common elements
-        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
-            .setScale(this.scaleFactor);
-        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
-            .setScale(this.scaleFactor);
+        this.repositionCommonElements();
 
         // Move this line to the end of the method
         if (!this.gameOver || this.gamePhase < 3) {
             this.uiHand.updateUIHandPosition();
         }
+    }
+
+    // Reposition common elements
+    repositionCommonElements() {
+        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
+            .setScale(this.scaleFactor);
+        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
+            .setScale(this.scaleFactor);
     }
 
     // Reposition regular game assets
@@ -724,7 +754,7 @@ export default class MainScene extends Phaser.Scene {
         this.deltaMultiplier = delta / targetDelta;
         
         // Cap the multiplier to prevent extreme values on very slow/fast devices
-        this.deltaMultiplier = Phaser.Math.Clamp(this.deltaMultiplier, 0.5, 2.0);
+        this.deltaMultiplier = Phaser.Math.Clamp(this.deltaMultiplier, 0.75, 1.5);
         
         // Update particle emitter flow rate if needed
         if (this.emberEmitter && !this.emberEmitter.paused) {

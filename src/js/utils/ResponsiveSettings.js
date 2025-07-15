@@ -9,11 +9,11 @@ export default class ResponsiveSettings {
     {
         if (orientation === Phaser.Scale.PORTRAIT)
         {
-            console.log('Portrait');
+            console.log('%cResponsiveSettings::Portrait', 'color: #00e1f8; background:rgb(29, 29, 29);');
         }
         else if (orientation === Phaser.Scale.LANDSCAPE)
         {
-            console.log('Landscape');
+            console.log('%cResponsiveSettings::Landscape', 'color: #00e1f8; background:rgb(29, 29, 29);');
         }
     }
 
@@ -65,17 +65,19 @@ export default class ResponsiveSettings {
     getDeviceType() {
         const aspectRatio = this.isPortrait ? this.gameWidth / this.gameHeight : this.gameHeight / this.gameWidth;
         if (Math.abs(aspectRatio - 1) < 0.1) {
-            console.log('Device: square');
+            console.log('%cResponsiveSettings::Device: square', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'square';
         } else if ((this.gameWidth >= 712 && this.gameHeight >= 1024) || (this.gameWidth >= 1024 && this.gameHeight >= 712)) {
-            console.log('Device: tablet');
+            console.log('%cResponsiveSettings::Device: tablet', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'tablet';
         } else if (this.gameWidth <= 320 && this.gameHeight <= 480) {
-            console.log('Device: smallPhone');
+            console.log('%cResponsiveSettings::Device: smallPhone', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'smallPhone';
         } else {
-            console.log('Device: phone');
+            console.log('%cResponsiveSettings::Device: phone', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'phone';
         }
     }
+    
+    
 }

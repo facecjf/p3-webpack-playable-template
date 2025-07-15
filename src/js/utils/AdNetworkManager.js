@@ -59,7 +59,7 @@ export default class AdNetworkManager {
                 if (typeof url !== 'undefined') {
                     window.open(url);
                 } else {
-                    console.log('AdNetwork Manager: Development: No URL defined');
+                    console.log('%cAdNetwork Manager::Development: No URL defined', 'color: #f87c00; background:rgb(29, 29, 29);');
                 }
                 break;
             case 'google':
@@ -140,7 +140,8 @@ export default class AdNetworkManager {
                 console.log('Bigabid: click, complete, and final_url fired');
                 break;
             default:
-                console.log('AdNetwork Manager: Development CTA click');
+                console.log('%cAdNetwork Manager::Development CTA click', 'color: #f87c00; background:rgb(29, 29, 29);');
+
         }
     }
 
@@ -160,10 +161,10 @@ export default class AdNetworkManager {
                 console.log('Bigabid: complete and final_url fired');
                 break;
             case 'development':
-                console.log('AdNetwork Manager: Development end game ad');
+                console.log('%cAdNetwork Manager::Development end game ad', 'color: #f87c00; background:rgb(29, 29, 29);');
                 break;
             default:
-                console.log('AdNetwork Manager: Development end game ad');
+                console.log('%cAdNetwork Manager::Development end game ad', 'color: #f87c00; background:rgb(29, 29, 29);');
         }
     }
 
@@ -189,10 +190,10 @@ export default class AdNetworkManager {
                 this.fireBigabidMacro('game_viewable');
                 break;
             case 'development':
-                console.log('AdNetwork Manager: Development start game ad');
+                console.log('%cAdNetwork Manager::Development start game ad', 'color: #f87c00; background:rgb(29, 29, 29);');
                 break;
             default:
-                console.log('AdNetwork Manager: Development start game ad');
+                console.log('%cAdNetwork Manager::Development start game ad', 'color: #f87c00; background:rgb(29, 29, 29);');
         }
     }
 
@@ -269,10 +270,10 @@ export default class AdNetworkManager {
                 console.log('Bigabid: mraid_viewable fired');
                 break;
             case 'development':
-                console.log('AdNetwork Manager: Development loaded game ad');
+                console.log('%cAdNetwork Manager::Development loaded game ad', 'color: #f87c00; background:rgb(29, 29, 29);');
                 break;
             default:
-                console.log('AdNetwork Manager: Development loaded game ad');
+                console.log('%cAdNetwork Manager::Development loaded game ad', 'color: #f87c00; background:rgb(29, 29, 29);');
         }
     }
 
@@ -282,10 +283,10 @@ export default class AdNetworkManager {
                 mraid.setVolume(volume);
                 break;
             case 'development':
-                console.log('AdNetwork Manager: Development audio volume change');
+                console.log('%cAdNetwork Manager::Development audio volume change', 'color: #f87c00; background:rgb(29, 29, 29);');
                 break;
             default:
-                console.log('AdNetwork Manager: Development audio volume change');
+                console.log('%cAdNetwork Manager::Development audio volume change', 'color: #f87c00; background:rgb(29, 29, 29);');
         }
     }
     
