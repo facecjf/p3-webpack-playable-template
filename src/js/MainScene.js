@@ -717,7 +717,7 @@ export default class MainScene extends Phaser.Scene {
         this.deltaMultiplier = delta / targetDelta;
         
         // Cap the multiplier to prevent extreme values on very slow/fast devices
-        this.deltaMultiplier = Phaser.Math.Clamp(this.deltaMultiplier, 0.5, 2.0);
+        this.deltaMultiplier = Phaser.Math.Clamp(this.deltaMultiplier, 0.75, 1.5);
         
         // Update particle emitter flow rate if needed
         if (this.emberEmitter && !this.emberEmitter.paused) {
