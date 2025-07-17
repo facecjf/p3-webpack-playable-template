@@ -129,9 +129,6 @@ export default class MainScene extends Phaser.Scene {
         // resize background
         this.resizeBackground();
 
-        // Logo and CTA
-        this.setupUI();
-
         // Initialize UI hand
         this.uiHand = new UIHand.default(this);
         this.uiHand.setInitialPosition(
@@ -143,13 +140,13 @@ export default class MainScene extends Phaser.Scene {
         this.uiHand.createUIHand();
 
         // Create tutorial message
-        this.createTutorialMessage();
+        //this.createTutorialMessage();
         
         // Overlay for End Card
         this.overlay = this.add.graphics();
 
         // Start Tut Tween
-        this.startTutTextTween();
+        //this.startTutTextTween();
 
         // Start Embers
         this.createEmberEmitter();
@@ -157,8 +154,8 @@ export default class MainScene extends Phaser.Scene {
         // Pause all sounds
         this.pauseSoundObjects();
 
-        // create game container
-        this.createGameContainer();
+        // create UI elements
+        this.setupUI();
 
         // ADD CALLS TO NEW GAME METHODS HERE
     }
@@ -172,59 +169,80 @@ export default class MainScene extends Phaser.Scene {
 
     //// ADD NEW GAME METHODS HERE
 
-    // create game container
-    createGameContainer() {
-        this.gameContainer = this.add.container(0, 160 * this.scaleFactor);
-        this.gameContainer.setSize(this.gameWidth, this.gameHeight - 160 * this.scaleFactor);
+    // create UI container
+    createUIContainer() {
+        this.uiContainer = this.add.container(0, 0);
+        this.uiContainer.setSize(this.gameWidth, this.gameHeight);
 
         // create game container background
-        this.gameContainerBg = this.add.graphics().fillStyle(0x00ff00).fillRect(0, 0, this.gameContainer.width, this.gameContainer.height);
-        this.gameContainerBg.setAlpha(0.25);
+        this.uiContainerBg = this.add.graphics().fillStyle(0x00ff00).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
+        this.uiContainerBg.setAlpha(0.25);
 
         // add game container background to game container
-        this.gameContainer.setDepth(0);
-        this.gameContainer.add(this.gameContainerBg);
+        this.uiContainer.setDepth(100);
+        this.uiContainer.add(this.uiContainerBg);
     }
 
     // resize game container
-    resizeGameContainer() {
-        this.gameContainer.setPosition(0, 160 * this.scaleFactor);
-        this.gameContainer.setSize(this.gameWidth, this.gameHeight - 160 * this.scaleFactor);
+    resizeUIContainer() {
+        this.uiContainer.setPosition(0, 0);
+        this.uiContainer.setSize(this.gameWidth, this.gameHeight);
+        this.uiContainer.setScale(1);
         
         // resize game container background
-        this.gameContainerBg.setPosition(0, 0);
-        this.gameContainerBg.clear();
-        this.gameContainerBg.fillStyle(0x00ff00).fillRect(0, 0, this.gameContainer.width, this.gameContainer.height);
+        this.uiContainerBg.setPosition(0, 0);
+        this.uiContainerBg.clear();
+        this.uiContainerBg.fillStyle(0x00ff00).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
         
         // log the size of the game container
-        console.log('gameContainer.width', this.gameContainer.width);
-        console.log('gameContainer.height', this.gameContainer.height);
+        console.log('uiContainer.width', this.uiContainer.width);
+        console.log('uiContainer.height', this.uiContainer.height);
         console.log('gameWidth', this.gameWidth);
         console.log('gameHeight', this.gameHeight);
+        
+        //this.uiContainer.setScale(window.devicePixelRatio * this.scaleFactor);
     }
 
 
 
     // creat CTA
     setupUI() {
+        // create UI container
+        this.createUIContainer(); 
+        const topElementsY = 80 * this.scaleFactor;
         // Logo
-        const topElementsY = 90 * this.scaleFactor;
-        this.logo = this.add.image(20, topElementsY, "logo")
+        this.logo = this.add.image(30, topElementsY, "logo")
             .setScale(this.logoScale * this.scaleFactor)
             .setOrigin(0, 0.5);
 
         // CTA
         this.cta = new CTA.default(this);
-        this.cta.createCTA(this.gameWidth - 20, topElementsY);
+        this.cta.createCTA(this.uiContainer.width - 30, topElementsY);
         this.cta.createCTAText();
         //this.cta.createCTATween();
 
         // Legal
-        this.legal = this.add.image(this.centerX, this.gameHeight - 35 * this.scaleFactor, "legal")
+        this.legal = this.add.image(this.uiContainer.width/2, this.uiContainer.height - 35 * this.scaleFactor, "legal")
             .setScale(this.scaleFactor);
         // Disclaimer
-        this.disclaimer = this.add.image(this.centerX, this.gameHeight - 20 * this.scaleFactor, "disclaimer")
+        this.disclaimer = this.add.image(this.uiContainer.width/2, this.uiContainer.height - 20 * this.scaleFactor, "disclaimer")
             .setScale(this.scaleFactor);
+
+        // create tutorial message
+        this.createTutorialMessage();
+ 
+        // Start Tut Tween
+        this.startTutTextTween();
+  
+        // add UI elements to UI container
+        this.uiContainer.add(this.logo);
+        this.uiContainer.add(this.cta.ctaButton);
+        this.uiContainer.add(this.cta.ctaText);
+        this.uiContainer.add(this.tutText);
+        this.uiContainer.add(this.legal);
+        this.uiContainer.add(this.disclaimer);
+        
+ 
     }
 
     // Create tutorial message
@@ -469,7 +487,7 @@ export default class MainScene extends Phaser.Scene {
         this.isLandscape = this.responsiveSettings.isLandscape;
 
         // Resize game container
-        this.resizeGameContainer();
+        this.resizeUIContainer();
 
         // Resize background
         this.resizeBackground();
@@ -492,21 +510,21 @@ export default class MainScene extends Phaser.Scene {
 
     // Reposition common elements
     repositionCommonElements() {
-        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
+        this.legal.setPosition(this.uiContainer.width/2, this.uiContainer.height - 35 * this.scaleFactor)
             .setScale(this.scaleFactor);
-        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
+        this.disclaimer.setPosition(this.uiContainer.width/2, this.uiContainer.height - 20 * this.scaleFactor)
             .setScale(this.scaleFactor);
     }
 
     // Reposition regular game assets
     repositionGameAssets() {
         // Regular game layout positioning
-        const topElementsY = 90 * this.scaleFactor;
+        const topElementsY = 80 * this.scaleFactor;
 
-        this.logo.setPosition(20, topElementsY);
+        this.logo.setPosition(30, topElementsY);
         this.logo.setScale(this.logoScale * this.scaleFactor);
         
-        this.cta.ctaButton.setPosition(this.gameWidth - 20, topElementsY);
+        this.cta.ctaButton.setPosition(this.uiContainer.width - 30, topElementsY);
         this.cta.ctaButton.setScale(this.cta.ctaButtonScale * this.scaleFactor);
         this.cta.updateCTATextPosition();
 
@@ -541,14 +559,18 @@ export default class MainScene extends Phaser.Scene {
             );
             this.uiHand.uiHandController.resize(this.scaleFactor);
         }
+
+        this.uiContainer.setScale(1);
     }
 
     // Reposition assets for end module
     repositionEndModuleAssets() {
-        this.logo.setPosition(this.centerX, 200 * this.scaleFactor);
+        const logoY = this.isPortrait ? 200 : 100;
+        this.logo.setPosition(this.uiContainer.width/2, logoY);
         this.logo.setScale(1 * this.scaleFactor);
 
-        this.cta.ctaButton.setPosition(this.centerX, (this.gameHeight - 200 * this.scaleFactor));
+        const ctaY = this.isPortrait ? 200 : 100;   
+        this.cta.ctaButton.setPosition(this.uiContainer.width/2, (this.uiContainer.height - ctaY));
         this.cta.ctaButton.setScale(0.85 * this.scaleFactor);
 
         this.cta.updateCTATextPosition();
@@ -742,7 +764,7 @@ export default class MainScene extends Phaser.Scene {
     updateAllText() {
         if (this.ctaText) {
             this.ctaText.setText(this.getLocalizedText('play_now'));
-            this.updateCTATextPosition();
+            this.cta.updateCTATextPosition();
         }
         // Update other text elements as needed
     }

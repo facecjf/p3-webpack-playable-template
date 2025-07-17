@@ -16,12 +16,6 @@ const gameConfig = {
     input: {
         windowEvents: false  // Disable window-level events to avoid window.top usage
     },
-    // physics: {
-    //     default: 'arcade',
-    //     arcade: {
-    //         debug: true
-    //     }
-    // },
     scene: null
 };
 
