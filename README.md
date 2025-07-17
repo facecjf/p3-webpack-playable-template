@@ -32,7 +32,9 @@
 
 ### In The Works
 :pushpin: Incorporate Languages in build script
+
 :heavy_check_mark: Update build for correct output based on 'INDEX' template html files
+
 :heavy_check_mark: Update build for selectable ad networks
 
 ### Requirements
