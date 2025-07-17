@@ -1,21 +1,39 @@
-![phaser3-parcel-playable-logo](/src/img/logo.png)
+![playable-logo](/src/img/logo.png)
 # Playable Ads in one file
 ## Phaser 3 + Webpack 5 with auto base64 assets decode
 > A Phaser 3 project template for JavaScript (ES6 support via Babel) and Webpack 5 that includes local server with  hot-reloading for development and production builds in one file with assets on base64.
 
 ### Features
 - The project is assembled into one file and is ready for any ad networks.
-- Final build with minification and code optimization
-- All assets will automatically be base64 encoded and embedded in the project
+- All assets will automatically be base64 encoded and embedded in the project.
 - Updated preloader methods for handling bitmap base64 encoded correctly
-- Modern code with inheritance classes, arrow functions, as well as asynchronous code, and all this will work even in older browsers thanks to the built-in BabelJS
-- Custom build.js Build script with ``` node build.js ``` that targets designated Ad Networks
-- Localization support via ``` languages.json ```
+- Custom build.js Build script with `node build.js` that targets designated Ad Networks
+- Localization support via `languages.json`
+
+## Updates  
+
+### CTA button and text
+- CTA button and text are created in the `js/utils/CTA.js` file. Positioning is set in the `js/MainScene.js` file.
+
+### UI Hand
+- UI Hand is created in the `js/utils/UIHand.js` file. Positioning is set in the `js/MainScene.js` file.
+
+### Store links
+- Store links are stored in the `src/store-links.js` file.
+- Store links are injected into the `index.html` file at build time.
+
+### Responsive design
+- Responsive design is created in the `js/utils/ResponsiveSettings.js` file.
+
+### Ad network selectable at build time
+- Ad network is selected at build time.
 
 ### In The Works
 :pushpin: Incorporate Languages in build script
 
 :heavy_check_mark: Update build for correct output based on 'INDEX' template html files
+
+:heavy_check_mark: Update build for selectable ad networks
 
 ### Requirements
 [Node.js](https://nodejs.org/) (with npm)
@@ -40,7 +58,7 @@ For local testing use (localhost:8000 will open auto in browser) and without sta
 npm start
 ```
 
-To build the final file use
+To build the final file, use the following command:
 ```bash
 node build.js
 ```
@@ -75,4 +93,3 @@ const spritesheetFiles = {
 
 this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
 ```
-
