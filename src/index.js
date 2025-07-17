@@ -4,18 +4,25 @@ import MainScene from './js/MainScene.js';
 
 const gameConfig = {
     type: Phaser.AUTO,
-    parent: 'gameContainer',
+    parent: 'ad-container',
+    width: window.innerWidth,
+    height: window.innerHeight,
     backgroundColor: '#000000',
     scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        parent: 'phaser-example',
-        width: window.innerWidth,
-        height: window.innerHeight
     },
     input: {
-        windowEvents: false  // Disable window-level events to avoid window.top usage
+        windowEvents: true  // Disable window-level events to avoid window.top usage
     },
+    // NOTE: Physics is not needed for this project
+    // physics: {
+    //     default: 'arcade',
+    //     arcade: {
+    //         gravity: { y: 300 },
+    //         debug: false
+    //     }
+    // },
     scene: null
 };
 

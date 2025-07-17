@@ -64,18 +64,18 @@ export default class MainScene extends Phaser.Scene {
 
         // Initialize delta time handling
         this.initializeDeltaTimeHandling();
-
         // Initialize game camera
         this.gameCamera = this.cameras.main;
-
         // Initialize game components
         this.initializeGameVariables();
+        // Initialize UI hand
+        this.uiHand = new UIHand.default(this);
+        // Create game objects
         this.createGameObjects();
+        // Setup event listeners
         this.setupEventListeners();
-
         // Notify ad network that game ad is loaded
         this.adNetworkManager.loadedGameAd();
-
         // Initialize Audio
         // e.g. this.audioFile = this.sound.add('audioFile', { loop: false, volume: 1.5 });
          // Make scene globally accessible for MRAID audio control
@@ -91,7 +91,17 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    // Method to initialize game after MRAID is ready
+    // Initialize delta time handling
+    initializeDeltaTimeHandling() {
+        // Get the device's refresh rate if possible (fallback to 60)
+        const refreshRate = window.screen?.refreshRate || 60;
+        this.targetFPS = refreshRate;
+        
+        // Set initial frame time
+        this.lastFrameTime = this.time.now;
+    }
+
+    // Method to initialize game after MRAID is ready (optional)
     startGameInitialization() {
         // Game can now safely start
         this.adNetworkManager.startGameAd();
@@ -102,22 +112,10 @@ export default class MainScene extends Phaser.Scene {
 
     // Initialize various game state variables
     initializeGameVariables() {
-        // define specific game variable after start outside of the constructor ex: this.variable = true;
-        this.gameTop = 0;
-        this.gameBottom = this.gameHeight;
-        this.gameRight = this.gameWidth;
-        this.gameLeft = 0;
+        // define specific game variable after start outside of the constructor ex: this.variable = true;  
     }
 
-    // Method after initializeGameVariables
-    initializeDeltaTimeHandling() {
-        // Get the device's refresh rate if possible (fallback to 60)
-        const refreshRate = window.screen?.refreshRate || 60;
-        this.targetFPS = refreshRate;
-        
-        // Set initial frame time
-        this.lastFrameTime = this.time.now;
-    }
+    //// MAIN GAME METHODS ////
 
     // Create and position game objects (background, logo, CTA, etc.)
     createGameObjects() {
@@ -129,24 +127,8 @@ export default class MainScene extends Phaser.Scene {
         // resize background
         this.resizeBackground();
 
-        // Initialize UI hand
-        this.uiHand = new UIHand.default(this);
-        this.uiHand.setInitialPosition(
-            this.centerX - 120 * this.scaleFactor,
-            this.centerY + 120 * this.scaleFactor,
-            this.centerX + 120 * this.scaleFactor,
-            this.centerY + 120 * this.scaleFactor
-        );
-        this.uiHand.createUIHand();
-
-        // Create tutorial message
-        //this.createTutorialMessage();
-        
         // Overlay for End Card
         this.overlay = this.add.graphics();
-
-        // Start Tut Tween
-        //this.startTutTextTween();
 
         // Start Embers
         this.createEmberEmitter();
@@ -157,59 +139,100 @@ export default class MainScene extends Phaser.Scene {
         // create UI elements
         this.setupUI();
 
-        // ADD CALLS TO NEW GAME METHODS HERE
+        // Create UI hand
+        this.uiHand.createUIHand();
+
+        // create Main Game Area
+        this.createMainGameArea();
+
+        // ADD CALLS TO NEW GAME METHODS HERE //
     }
 
-    //// ADD NEW GAME METHODS HERE
+    //// ADD NEW GAME METHODS HERE ////
 
 
 
 
 
 
-    //// ADD NEW GAME METHODS HERE
+    //// ADD NEW GAME METHODS HERE ////
+
+    // create Main Game Area container
+    createMainGameArea() {
+        this.mainGameArea = this.add.container(0, 0);
+        const containerHeight = this.isPortrait ? this.gameHeight/1.25 : this.gameHeight/1.5;
+        const containerWidth = this.gameWidth;
+        const containerY = this.isPortrait ? this.centerY - containerHeight/2.25 : this.centerY - containerHeight/2.5;
+        this.mainGameArea.setSize(containerWidth, containerHeight);
+        this.mainGameArea.setPosition(0, containerY);
+        this.mainGameArea.setScale(1);
+
+        // create Main Game Area background (debugging)
+        this.mainGameAreaBg = this.add.graphics().fillStyle(0x00ff00).fillRect(0, 0, this.mainGameArea.width, this.mainGameArea.height);
+        this.mainGameAreaBg.setAlpha(0.25);
+        this.mainGameAreaBg.setScale(1);
+
+        // add Main Game Area background to Main Game Area
+        this.mainGameArea.setDepth(1);
+        this.mainGameArea.add(this.mainGameAreaBg);
+    }
+
+    // resize Main Game Area
+    resizeMainGameArea() {
+        const containerHeight = this.isPortrait ? this.gameHeight/1.25 : this.gameHeight/1.5;
+        const containerWidth = this.gameWidth;
+        const containerY = this.isPortrait ? this.centerY - containerHeight/2.25 : this.centerY - containerHeight/2.5;
+        this.mainGameArea.setPosition(0, containerY);
+        this.mainGameArea.setSize(containerWidth, containerHeight);
+        this.mainGameArea.setScale(1);
+
+        // resize Main Game Area background (debugging)
+        this.mainGameAreaBg.setPosition(0, 0);
+        this.mainGameAreaBg.clear();
+        this.mainGameAreaBg.fillStyle(0x00ff00).fillRect(0, 0, this.mainGameArea.width, this.mainGameArea.height);
+        this.mainGameAreaBg.setScale(1);
+        
+    }
 
     // create UI container
     createUIContainer() {
         this.uiContainer = this.add.container(0, 0);
         this.uiContainer.setSize(this.gameWidth, this.gameHeight);
 
-        // create game container background
-        this.uiContainerBg = this.add.graphics().fillStyle(0x00ff00).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
+        // create UI container background (debugging)
+        this.uiContainerBg = this.add.graphics().fillStyle(0x00e1f8).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
         this.uiContainerBg.setAlpha(0.25);
 
-        // add game container background to game container
+        // add UI container background to UI container
         this.uiContainer.setDepth(100);
         this.uiContainer.add(this.uiContainerBg);
     }
 
-    // resize game container
+    // resize UI container
     resizeUIContainer() {
         this.uiContainer.setPosition(0, 0);
         this.uiContainer.setSize(this.gameWidth, this.gameHeight);
         this.uiContainer.setScale(1);
         
-        // resize game container background
+        // resize UI container background (debugging)
         this.uiContainerBg.setPosition(0, 0);
         this.uiContainerBg.clear();
-        this.uiContainerBg.fillStyle(0x00ff00).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
+        this.uiContainerBg.fillStyle(0x00e1f8).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
         
-        // log the size of the game container
-        console.log('uiContainer.width', this.uiContainer.width);
-        console.log('uiContainer.height', this.uiContainer.height);
-        console.log('gameWidth', this.gameWidth);
-        console.log('gameHeight', this.gameHeight);
+        // log the size of the UI container (debugging)
+        // console.log('uiContainer.width', this.uiContainer.width);
+        // console.log('uiContainer.height', this.uiContainer.height);
+        // console.log('gameWidth', this.gameWidth);
+        // console.log('gameHeight', this.gameHeight);
         
         //this.uiContainer.setScale(window.devicePixelRatio * this.scaleFactor);
     }
 
-
-
-    // creat CTA
+    // create UI elements
     setupUI() {
         // create UI container
         this.createUIContainer(); 
-        const topElementsY = 80 * this.scaleFactor;
+        const topElementsY = 120 * this.scaleFactor;
         // Logo
         this.logo = this.add.image(30, topElementsY, "logo")
             .setScale(this.logoScale * this.scaleFactor)
@@ -241,14 +264,12 @@ export default class MainScene extends Phaser.Scene {
         this.uiContainer.add(this.tutText);
         this.uiContainer.add(this.legal);
         this.uiContainer.add(this.disclaimer);
-        
- 
     }
 
     // Create tutorial message
     createTutorialMessage() {
-        const topElementsY = 90 * this.scaleFactor;
-        const tutY = this.isPortrait ? topElementsY + 100 * this.scaleFactor : topElementsY;
+        const topElementsY = 120 * this.scaleFactor;
+        const tutY = this.isPortrait ? topElementsY + 150 * this.scaleFactor : topElementsY;
 
         // Tutorial BG
         // this.tutBG = this.add.image(this.centerX, tutBGY, "tutbg")
@@ -284,6 +305,80 @@ export default class MainScene extends Phaser.Scene {
             this.tutTextTween.stop();
             this.tutTextTween = null;
             this.tutText.setScale(this.tutTextBaseScale);
+        }
+    }
+
+    // Handle CTA click
+    handleCTAClick() {
+        // Handle CTA button click
+        if (!this.ctaClicked && !this.gameOver) {
+            this.ctaClicked = true;
+            this.endGameAd();
+            this.clickCTA();
+        }
+    }
+
+    // Handle CTA click
+    clickCTA() {
+        // Actions to perform when CTA is clicked
+        this.adNetworkManager.clickCTA();
+        // Add any additional CTA click logic here
+        if (this.gamePhase < 3) {
+            this.gameOver = true;
+            this.gameOverMan();
+            this.gamePhase = 3;
+        }
+        // Pause all sounds
+        this.sound.pauseAll();
+    }
+
+    // Handle inactivity
+    inactivityTimer() {
+        // Handle inactivity
+       if (this.gameOver && this.gamePhase > 2) {
+            this.time.removeEvent(this.inactivityEvent);
+            this.inactivityEvent = null;
+            this.isInactivity = false;
+            console.log('%c>Inactivity Timer: stopped', 'color: #000; background: #f87c00;');
+        } else {
+            this.uiHand.updateUIHandPosition();
+            // this.startTutTextTween();
+            console.log('%c>Inactivity Timer: reset', 'color: #000; background: #f87c00;');
+            this.isInactivity = false;
+            this.time.removeEvent(this.inactivityEvent);
+            this.inactivityEvent = null;
+            this.inactiveTime = 4000;     
+        }
+    }
+
+    // Reset the inactivity timer
+    resetInactivityTimer() {
+        this.time.removeEvent(this.inactivityEvent);
+        this.inactivityEvent = this.time.addEvent({ delay: this.inactiveTime, callback: this.inactivityTimer, callbackScope: this });
+        console.log('%c>Inactivity Timer: started', 'color: #000; background: #f87c00;');
+        this.isInactivity = true;
+    }
+    
+    // Handle global click events
+    handleGlobalClick() {
+        // Handle global click events
+        if (this.gameOver && this.gamePhase > 2) {
+            if (!this.ctaClicked) {
+                this.ctaClicked = true;
+                this.clickCTA();
+            }
+        } else if (!this.firstClick && !this.gameOver) {
+            this.firstClick = true;
+            console.log('%c>First Click', 'color: #FFF; background: #ab24f8;');
+            this.uiHand.removeUIHandTweens();
+            this.stopTutTextTween();
+            this.resetInactivityTimer();
+            this.adNetworkManager.handleBigabidEngagement();
+        } else {
+            //console.log('click / ui hand reset works!');
+            this.uiHand.removeUIHandTweens();
+            this.stopTutTextTween();
+            this.resetInactivityTimer();
         }
     }
 
@@ -458,21 +553,6 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    // Resize background images based on orientation
-    resizeBackground() {
-        if (this.isPortrait) {
-            this.bg.setDisplaySize(this.gameHeight, this.gameHeight);
-            this.ecbg.setDisplaySize(this.gameHeight, this.gameHeight);
-            this.bg.setPosition(this.centerX, this.centerY);
-            this.ecbg.setPosition(this.centerX, this.centerY);
-        } else {
-            this.bg.setDisplaySize(this.gameWidth, this.gameWidth);
-            this.ecbg.setDisplaySize(this.gameWidth, this.gameWidth);
-            this.bg.setPosition(this.centerX, this.centerY);
-            this.ecbg.setPosition(this.centerX, this.centerY);
-        }
-    }
-
     // Reposition handler
     repositionHandler() {
         // Update responsive settings
@@ -489,9 +569,13 @@ export default class MainScene extends Phaser.Scene {
         // Resize game container
         this.resizeUIContainer();
 
+        // Resize Main Game Area
+        this.resizeMainGameArea();
+
         // Resize background
         this.resizeBackground();
         
+        // Reposition assets based on game phase
         if (this.gameOver && this.gamePhase >= 3) {
             // End module layout
             this.repositionEndModuleAssets();
@@ -500,11 +584,27 @@ export default class MainScene extends Phaser.Scene {
             this.repositionGameAssets();
         }
 
+        // Reposition common elements
         this.repositionCommonElements();
 
-        // Move this line to the end of the method
+        // Update UI hand position
         if (!this.gameOver || this.gamePhase < 3) {
             this.uiHand.updateUIHandPosition();
+        }
+    }
+
+    // Resize background images based on orientation
+    resizeBackground() {
+        if (this.isPortrait) {
+            this.bg.setDisplaySize(this.gameHeight, this.gameHeight);
+            this.ecbg.setDisplaySize(this.gameHeight, this.gameHeight);
+            this.bg.setPosition(this.centerX, this.centerY);
+            this.ecbg.setPosition(this.centerX, this.centerY);
+        } else {
+            this.bg.setDisplaySize(this.gameWidth, this.gameWidth);
+            this.ecbg.setDisplaySize(this.gameWidth, this.gameWidth);
+            this.bg.setPosition(this.centerX, this.centerY);
+            this.ecbg.setPosition(this.centerX, this.centerY);
         }
     }
 
@@ -519,18 +619,21 @@ export default class MainScene extends Phaser.Scene {
     // Reposition regular game assets
     repositionGameAssets() {
         // Regular game layout positioning
-        const topElementsY = 80 * this.scaleFactor;
+        const topElementsY = 120 * this.scaleFactor;
 
+        // Logo
         this.logo.setPosition(30, topElementsY);
         this.logo.setScale(this.logoScale * this.scaleFactor);
         
+        // CTA
         this.cta.ctaButton.setPosition(this.uiContainer.width - 30, topElementsY);
         this.cta.ctaButton.setScale(this.cta.ctaButtonScale * this.scaleFactor);
         this.cta.updateCTATextPosition();
 
-        const tutY = this.isPortrait ? topElementsY + 100 * this.scaleFactor : topElementsY;
+        // Tutorial text
+        const tutY = this.isPortrait ? topElementsY + 150 * this.scaleFactor : topElementsY;
         // this.tutBG.setPosition(this.centerX, tutBGY).setScale(this.scaleFactor);
-        
+
         this.tutTextBaseScale = this.scaleFactor;
         this.tutText.setPosition(this.centerX, tutY);
         
@@ -560,16 +663,19 @@ export default class MainScene extends Phaser.Scene {
             this.uiHand.uiHandController.resize(this.scaleFactor);
         }
 
+        // Resize UI container
         this.uiContainer.setScale(1);
     }
 
     // Reposition assets for end module
     repositionEndModuleAssets() {
-        const logoY = this.isPortrait ? 200 : 100;
+        // Logo
+        const logoY = this.isPortrait ? 200 * this.scaleFactor : 150 * this.scaleFactor;
         this.logo.setPosition(this.uiContainer.width/2, logoY);
         this.logo.setScale(1 * this.scaleFactor);
 
-        const ctaY = this.isPortrait ? 200 : 100;   
+        // CTA
+        const ctaY = this.isPortrait ? 200 * this.scaleFactor : 150 * this.scaleFactor;   
         this.cta.ctaButton.setPosition(this.uiContainer.width/2, (this.uiContainer.height - ctaY));
         this.cta.ctaButton.setScale(0.85 * this.scaleFactor);
 
@@ -584,80 +690,7 @@ export default class MainScene extends Phaser.Scene {
         this.tutText.setVisible(false);
     }
 
-    // Handle CTA click
-    handleCTAClick() {
-        // Handle CTA button click
-        if (!this.ctaClicked && !this.gameOver) {
-            this.ctaClicked = true;
-            this.endGameAd();
-            this.clickCTA();
-        }
-    }
-
-    // Handle CTA click
-    clickCTA() {
-        // Actions to perform when CTA is clicked
-        this.adNetworkManager.clickCTA();
-        // Add any additional CTA click logic here
-        if (this.gamePhase < 3) {
-            this.gameOver = true;
-            this.gameOverMan();
-            this.gamePhase = 3;
-        }
-        // Pause all sounds
-        this.sound.pauseAll();
-    }
-
-    // Handle inactivity
-    inactivityTimer() {
-        // Handle inactivity
-       if (this.gameOver) {
-            this.time.removeEvent(this.inactivityEvent);
-            this.inactivityEvent = null;
-            this.isInactivity = false;
-            console.log('%c>Inactivity Timer: stopped', 'color: #000; background: #f87c00;');
-        }
-        this.uiHand.updateUIHandPosition();
-        // this.startTutTextTween();
-        console.log('%c>Inactivity Timer: reset', 'color: #000; background: #f87c00;');
-        this.isInactivity = false;
-        this.time.removeEvent(this.inactivityEvent);
-        this.inactivityEvent = null;
-        this.inactiveTime = 4000;        
-    }
-
-    // Reset the inactivity timer
-    resetInactivityTimer() {
-        this.time.removeEvent(this.inactivityEvent);
-        this.inactivityEvent = this.time.addEvent({ delay: this.inactiveTime, callback: this.inactivityTimer, callbackScope: this });
-        console.log('%c>Inactivity Timer: started', 'color: #000; background: #f87c00;');
-        this.isInactivity = true;
-    }
-    
-    // Handle global click events
-    handleGlobalClick() {
-        // Handle global click events
-        if (this.gameOver && this.gamePhase > 2) {
-            if (!this.ctaClicked) {
-                this.ctaClicked = true;
-                this.clickCTA();
-            }
-        } else if (!this.firstClick && !this.gameOver) {
-            this.firstClick = true;
-            console.log('%c>First Click', 'color: #FFF; background: #ab24f8;');
-            this.uiHand.removeUIHandTweens();
-            this.stopTutTextTween();
-            this.resetInactivityTimer();
-            this.adNetworkManager.handleBigabidEngagement();
-        } else {
-            //console.log('click / ui hand reset works!');
-            this.uiHand.removeUIHandTweens();
-            this.stopTutTextTween();
-            this.resetInactivityTimer();
-        }
-    }
-
-    // Handle end of game transition
+    // Handle end of game transition (optional)
     transitionEnd() {
         // Stop any ongoing game logic
         this.gameOver = true;
@@ -696,10 +729,11 @@ export default class MainScene extends Phaser.Scene {
             this.uiHandController.hide();
             this.uiHandController.stopTween();
         }
-        
+        // End module
         this.endModual();
+        // Remove UI hand tweens
         this.uiHand.removeUIHandTweens();
-        
+        // Check if first click
         if (!this.firstClick) {
             this.gamePhase++;
             this.firstClick = true;
@@ -715,18 +749,20 @@ export default class MainScene extends Phaser.Scene {
 
     // Set up end module display
     endModual() {
+        // Overlay
         this.overlay.fillStyle(0x000000, 0.5).setDepth(15).fillRect(0, 0, this.gameWidth, this.gameHeight);
+        // Background
         this.bg.visible = false;
+        // Ecbg
         this.ecbg.visible = true;
-
+        // Logo
         this.logo.setOrigin(0.5);
         this.logo.setDepth(20);
         
         this.cta.ctaButton.setDepth(20);
         this.cta.ctaButton.setOrigin(0.5);
-        
+        // Reposition end module assets
         this.repositionEndModuleAssets();
-
         // Hide tutorial and timer elements
         //this.tutBG.setVisible(false);
         this.tutText.setVisible(false);
@@ -734,11 +770,13 @@ export default class MainScene extends Phaser.Scene {
 
     // End game ad
     endGameAd() {
+        // Notify ad network that game ad is ending
         this.adNetworkManager.endGameAd();
     }
 
     // Start game ad
     startGameAd() {
+        // Notify ad network that game ad is starting
         this.adNetworkManager.startGameAd();
     }
 
@@ -786,9 +824,9 @@ export default class MainScene extends Phaser.Scene {
 
         // Main Game Update Loop - Used for setting game phases
         if (this.gamePhase == 0 && !this.gameOver) {
-            console.log('%c>Phase 1 Tutorial', 'color: #FFF; background: #ab24f8;');
             // Notify ad network that game ad is starting
             this.startGameAd();
+            console.log('%c>Phase 1 Tutorial', 'color: #FFF; background: #ab24f8;');
             this.gamePhase++;
         } else if (this.gamePhase == 1 && !this.gameOver) {
             if (this.firstClick) {
@@ -797,8 +835,9 @@ export default class MainScene extends Phaser.Scene {
                 this.gamePhase++;
             }
         } else if (this.gamePhase == 2 && this.gameOver) {
-            console.log('%c>Phase 3 Game Over EM', 'color: #FFF; background: #ab24f8;');
+            // Notify ad network that game ad is ending
             this.endGameAd();
+            console.log('%c>Phase 3 Game Over EM', 'color: #FFF; background: #ab24f8;');
             this.gamePhase++;
         } else if (this.gamePhase == 3 && this.gameOver) {
             if (this.ctaClicked) {
@@ -807,7 +846,7 @@ export default class MainScene extends Phaser.Scene {
             }
         }
         // Store the current frame time for next frame's delta calculation
-         this.lastFrameTime = time;
+        this.lastFrameTime = time;
     }
 }
 

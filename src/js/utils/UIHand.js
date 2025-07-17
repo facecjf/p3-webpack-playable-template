@@ -10,6 +10,7 @@ export default class UIHand {
         this.handAngle = 0;
         this.handAngleOpo = 0;
         this.uiHandController = null;
+        
     }
 
     // Set initial UI hand position
@@ -19,90 +20,108 @@ export default class UIHand {
         this.uiHandStartY = startY;
         this.uiHandEndX = endX;
         this.uiHandEndY = endY;
+        
     }
 
-     // Create and set up the UI hand for guiding user interactions
-     createUIHand() {
+    // Initialize UI hand
+    initializeUIHand() {
+        this.setInitialPosition(
+            this.scene.centerX - 120 * this.scaleFactor,
+            this.scene.centerY + 120 * this.scaleFactor,
+            this.scene.centerX + 120 * this.scaleFactor,
+            this.scene.centerY + 120 * this.scaleFactor
+        );
+    }
+
+    // Create and set up the UI hand for guiding user interactions
+    createUIHand() {
+        // Initialize UI hand
+        if (!this.uiHand) { 
+            this.initializeUIHand();
+        }
+        // Create UI hand
         const uiHand = this.scene.add.image(this.uiHandStartX, this.uiHandStartY, 'uihand')
-                .setDepth(20)
+                .setDepth(this.scene.uiContainer.depth + 1)
                 .setScale(this.scaleFactor);
             
-            let currentTween = null;
+        let currentTween = null;
     
-            const createTween = () => {
-                if (currentTween) currentTween.stop();
-                currentTween = this.scene.tweens.add({
-                    targets: uiHand,
-                    x: this.uiHandEndX,
-                    y: this.uiHandEndY,
-                    ease: 'Sine.easeInOut',
-                    duration: 1000,
-                    repeat: -1,
-                    yoyo: true,
-                    onUpdate: (tween, target) => {
-                        // No extra work needed, Phaser handles the delta time internally
-                    }
-                });
-            };
+        const createTween = () => {
+            if (currentTween) currentTween.stop();
+            currentTween = this.scene.tweens.add({
+                targets: uiHand,
+                x: this.uiHandEndX,
+                y: this.uiHandEndY,
+                ease: 'Sine.easeInOut',
+                duration: 1000,
+                repeat: -1,
+                yoyo: true,
+                onUpdate: (tween, target) => {
+                    // No extra work needed, Phaser handles the delta time internally
+                }
+            });
+        };
     
-            const setPosition = (startX, startY, endX, endY) => {
-                this.uiHandStartX = startX;
-                this.uiHandStartY = startY;
-                this.uiHandEndX = endX;
-                this.uiHandEndY = endY;
-                uiHand.setPosition(startX, startY);
-                createTween();
-            };
-    
-            const hide = () => {
-                uiHand.setAlpha(0);
-                if (currentTween) currentTween.stop();
-            };
-    
-            const show = () => {
-                uiHand.setAlpha(1);
-                createTween();
-            };
-    
-            const stopTween = () => {
-                if (currentTween) currentTween.stop();
-            };
-    
-            const resize = (newScale) => {
-                uiHand.setScale(newScale);
-            };
-    
+        const setPosition = (startX, startY, endX, endY) => {
+            this.uiHandStartX = startX;
+            this.uiHandStartY = startY;
+            this.uiHandEndX = endX;
+            this.uiHandEndY = endY;
+            uiHand.setPosition(startX, startY);
             createTween();
+        };
     
-            this.uiHandController = { uiHand, setPosition, hide, show, stopTween, resize };
-            
-            this.updateUIHandPosition();
-        }
+        const hide = () => {
+            uiHand.setAlpha(0);
+            if (currentTween) currentTween.stop();
+        };
     
-        // Update UI hand position based on game state
-        updateUIHandPosition() {
-            if (this.gameOver && this.gamePhase >= 3) {
-                if (this.uiHandController) {
-                    this.uiHandController.hide();
-                }
-                return;
-            }
-            if (this.uiHandController) {
-                this.uiHandController.setPosition(
-                    this.uiHandStartX,
-                    this.uiHandStartY,
-                    this.uiHandEndX,
-                    this.uiHandEndY
-                );
-                this.uiHandController.resize(this.scaleFactor);
+        const show = () => {
+            uiHand.setAlpha(1);
+            createTween();
+        };
     
-                if (!this.gameOver) {
-                    this.uiHandController.show();
-                }
-            }
-        }
+        const stopTween = () => {
+            if (currentTween) currentTween.stop();
+        };
+    
+        const resize = (newScale) => {
+            uiHand.setScale(newScale);
+        };
+    
+        // Create tween
+        createTween();
+    
+        this.uiHandController = { uiHand, setPosition, hide, show, stopTween, resize };
 
-        // Remove UI hand tweens
+        // Update UI hand position
+        this.updateUIHandPosition();
+    }
+    
+    // Update UI hand position based on game state
+    updateUIHandPosition() {
+        if (this.gameOver && this.gamePhase >= 3) {
+            if (this.uiHandController) {
+                this.uiHandController.hide();
+            }
+            return;
+        }
+        if (this.uiHandController) {
+            this.uiHandController.setPosition(
+                this.uiHandStartX,
+                this.uiHandStartY,
+                this.uiHandEndX,
+                this.uiHandEndY
+            );
+            this.uiHandController.resize(this.scaleFactor);
+    
+            if (!this.gameOver) {
+                this.uiHandController.show();
+            }
+        }
+    }
+
+    // Remove UI hand tweens
     removeUIHandTweens() {
         if (this.uiHandController) {
             this.uiHandController.hide();

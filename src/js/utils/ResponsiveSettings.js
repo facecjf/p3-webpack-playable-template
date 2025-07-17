@@ -5,6 +5,7 @@ export default class ResponsiveSettings {
         this.initializeResponsiveDesign();
     }
 
+    // check orientation
     checkOriention (orientation)
     {
         if (orientation === Phaser.Scale.PORTRAIT)
@@ -36,17 +37,21 @@ export default class ResponsiveSettings {
         // this.isLandscape = this.gameWidth > this.gameHeight;
         
         // Calculate scaling factors
-        const baseScaleX = this.gameWidth / 768;
-        const baseScaleY = this.gameHeight / 768;
+        const baseScaleX = this.gameWidth / 712;
+        const baseScaleY = this.gameHeight / 712;
         
         // Calculate scaling factor based on device type and orientation
         if (this.deviceType === 'phone') {
+            // phone
             this.scaleFactor = this.isPortrait ? baseScaleX : baseScaleY;
         } else if (this.deviceType === 'tablet') {
+            // tablet
             this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.85;
         } else if (this.deviceType === 'smallPhone') {
+            // small phone
             this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.85;
-        } else { // square
+        } else {
+            // square
             this.scaleFactor = Math.min(baseScaleX, baseScaleY) * 0.5;
         }
         
@@ -62,22 +67,26 @@ export default class ResponsiveSettings {
         return this;
     }
 
+    // get device type
     getDeviceType() {
+        // get aspect ratio
         const aspectRatio = this.isPortrait ? this.gameWidth / this.gameHeight : this.gameHeight / this.gameWidth;
+        // check if square
         if (Math.abs(aspectRatio - 1) < 0.1) {
             console.log('%cResponsiveSettings::Device: square', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'square';
+        // check if tablet
         } else if ((this.gameWidth >= 712 && this.gameHeight >= 1024) || (this.gameWidth >= 1024 && this.gameHeight >= 712)) {
             console.log('%cResponsiveSettings::Device: tablet', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'tablet';
+        // check if small phone
         } else if (this.gameWidth <= 320 && this.gameHeight <= 480) {
             console.log('%cResponsiveSettings::Device: smallPhone', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'smallPhone';
+        // check if phone
         } else {
             console.log('%cResponsiveSettings::Device: phone', 'color: #00e1f8; background:rgb(29, 29, 29);');
             return 'phone';
         }
     }
-    
-    
 }
