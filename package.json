@@ -5,7 +5,8 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "build-all": "node build.js"
+    "build-all": "node build.js",
+    "postinstall": "node patch-phaser.js"
   },
   "license": "MIT",
   "devDependencies": {
@@ -22,7 +23,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "phaser": "^3.87.0"
+    "phaser": "^3.85.0"
   },
   "packageManager": "yarn@3.2.0"
 }
