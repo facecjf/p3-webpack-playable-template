@@ -139,11 +139,14 @@ export default class MainScene extends Phaser.Scene {
         // create UI elements
         this.setupUI();
 
-        // Create UI hand
+        // Create UI hand (uiHand initilized in create method)
         this.uiHand.createUIHand();
 
-        // create Main Game Area
-        this.createMainGameArea();
+        // create tutorial message
+        this.createTutorialMessage();
+ 
+        // Start Tut Tween
+        this.startTutTextTween();
 
         // ADD CALLS TO NEW GAME METHODS HERE //
     }
@@ -157,81 +160,11 @@ export default class MainScene extends Phaser.Scene {
 
     //// ADD NEW GAME METHODS HERE ////
 
-    // create Main Game Area container
-    createMainGameArea() {
-        this.mainGameArea = this.add.container(0, 0);
-        const containerHeight = this.isPortrait ? this.gameHeight/1.25 : this.gameHeight/1.5;
-        const containerWidth = this.gameWidth;
-        const containerY = this.isPortrait ? this.centerY - containerHeight/2.25 : this.centerY - containerHeight/2.5;
-        this.mainGameArea.setSize(containerWidth, containerHeight);
-        this.mainGameArea.setPosition(0, containerY);
-        this.mainGameArea.setScale(1);
-
-        // create Main Game Area background (debugging)
-        this.mainGameAreaBg = this.add.graphics().fillStyle(0x00ff00).fillRect(0, 0, this.mainGameArea.width, this.mainGameArea.height);
-        this.mainGameAreaBg.setAlpha(0.25);
-        this.mainGameAreaBg.setScale(1);
-
-        // add Main Game Area background to Main Game Area
-        this.mainGameArea.setDepth(1);
-        this.mainGameArea.add(this.mainGameAreaBg);
-    }
-
-    // resize Main Game Area
-    resizeMainGameArea() {
-        const containerHeight = this.isPortrait ? this.gameHeight/1.25 : this.gameHeight/1.5;
-        const containerWidth = this.gameWidth;
-        const containerY = this.isPortrait ? this.centerY - containerHeight/2.25 : this.centerY - containerHeight/2.5;
-        this.mainGameArea.setPosition(0, containerY);
-        this.mainGameArea.setSize(containerWidth, containerHeight);
-        this.mainGameArea.setScale(1);
-
-        // resize Main Game Area background (debugging)
-        this.mainGameAreaBg.setPosition(0, 0);
-        this.mainGameAreaBg.clear();
-        this.mainGameAreaBg.fillStyle(0x00ff00).fillRect(0, 0, this.mainGameArea.width, this.mainGameArea.height);
-        this.mainGameAreaBg.setScale(1);
-        
-    }
-
-    // create UI container
-    createUIContainer() {
-        this.uiContainer = this.add.container(0, 0);
-        this.uiContainer.setSize(this.gameWidth, this.gameHeight);
-
-        // create UI container background (debugging)
-        this.uiContainerBg = this.add.graphics().fillStyle(0x00e1f8).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
-        this.uiContainerBg.setAlpha(0.25);
-
-        // add UI container background to UI container
-        this.uiContainer.setDepth(100);
-        this.uiContainer.add(this.uiContainerBg);
-    }
-
-    // resize UI container
-    resizeUIContainer() {
-        this.uiContainer.setPosition(0, 0);
-        this.uiContainer.setSize(this.gameWidth, this.gameHeight);
-        this.uiContainer.setScale(1);
-        
-        // resize UI container background (debugging)
-        this.uiContainerBg.setPosition(0, 0);
-        this.uiContainerBg.clear();
-        this.uiContainerBg.fillStyle(0x00e1f8).fillRect(0, 0, this.uiContainer.width, this.uiContainer.height);
-        
-        // log the size of the UI container (debugging)
-        // console.log('uiContainer.width', this.uiContainer.width);
-        // console.log('uiContainer.height', this.uiContainer.height);
-        // console.log('gameWidth', this.gameWidth);
-        // console.log('gameHeight', this.gameHeight);
-        
-        //this.uiContainer.setScale(window.devicePixelRatio * this.scaleFactor);
-    }
 
     // create UI elements
     setupUI() {
         // create UI container
-        this.createUIContainer(); 
+        //this.createUIContainer(); 
         const topElementsY = 120 * this.scaleFactor;
         // Logo
         this.logo = this.add.image(30, topElementsY, "logo")
@@ -240,30 +173,16 @@ export default class MainScene extends Phaser.Scene {
 
         // CTA
         this.cta = new CTA.default(this);
-        this.cta.createCTA(this.uiContainer.width - 30, topElementsY);
+        this.cta.createCTA(this.gameWidth - 30, topElementsY);
         this.cta.createCTAText();
         //this.cta.createCTATween();
 
         // Legal
-        this.legal = this.add.image(this.uiContainer.width/2, this.uiContainer.height - 35 * this.scaleFactor, "legal")
+        this.legal = this.add.image(this.centerX, this.gameHeight - 35 * this.scaleFactor, "legal")
             .setScale(this.scaleFactor);
         // Disclaimer
-        this.disclaimer = this.add.image(this.uiContainer.width/2, this.uiContainer.height - 20 * this.scaleFactor, "disclaimer")
+        this.disclaimer = this.add.image(this.centerX, this.gameHeight - 20 * this.scaleFactor, "disclaimer")
             .setScale(this.scaleFactor);
-
-        // create tutorial message
-        this.createTutorialMessage();
- 
-        // Start Tut Tween
-        this.startTutTextTween();
-  
-        // add UI elements to UI container
-        this.uiContainer.add(this.logo);
-        this.uiContainer.add(this.cta.ctaButton);
-        this.uiContainer.add(this.cta.ctaText);
-        this.uiContainer.add(this.tutText);
-        this.uiContainer.add(this.legal);
-        this.uiContainer.add(this.disclaimer);
     }
 
     // Create tutorial message
@@ -566,12 +485,6 @@ export default class MainScene extends Phaser.Scene {
         this.isPortrait = this.responsiveSettings.isPortrait;
         this.isLandscape = this.responsiveSettings.isLandscape;
 
-        // Resize game container
-        this.resizeUIContainer();
-
-        // Resize Main Game Area
-        this.resizeMainGameArea();
-
         // Resize background
         this.resizeBackground();
         
@@ -610,9 +523,9 @@ export default class MainScene extends Phaser.Scene {
 
     // Reposition common elements
     repositionCommonElements() {
-        this.legal.setPosition(this.uiContainer.width/2, this.uiContainer.height - 35 * this.scaleFactor)
+        this.legal.setPosition(this.centerX, this.gameHeight - 35 * this.scaleFactor)
             .setScale(this.scaleFactor);
-        this.disclaimer.setPosition(this.uiContainer.width/2, this.uiContainer.height - 20 * this.scaleFactor)
+        this.disclaimer.setPosition(this.centerX, this.gameHeight - 20 * this.scaleFactor)
             .setScale(this.scaleFactor);
     }
 
@@ -626,7 +539,7 @@ export default class MainScene extends Phaser.Scene {
         this.logo.setScale(this.logoScale * this.scaleFactor);
         
         // CTA
-        this.cta.ctaButton.setPosition(this.uiContainer.width - 30, topElementsY);
+        this.cta.ctaButton.setPosition(this.gameWidth - 30, topElementsY);
         this.cta.ctaButton.setScale(this.cta.ctaButtonScale * this.scaleFactor);
         this.cta.updateCTATextPosition();
 
@@ -664,19 +577,19 @@ export default class MainScene extends Phaser.Scene {
         }
 
         // Resize UI container
-        this.uiContainer.setScale(1);
+        //this.uiContainer.setScale(1);
     }
 
     // Reposition assets for end module
     repositionEndModuleAssets() {
         // Logo
         const logoY = this.isPortrait ? 200 * this.scaleFactor : 150 * this.scaleFactor;
-        this.logo.setPosition(this.uiContainer.width/2, logoY);
+        this.logo.setPosition(this.centerX, logoY);
         this.logo.setScale(1 * this.scaleFactor);
 
         // CTA
         const ctaY = this.isPortrait ? 200 * this.scaleFactor : 150 * this.scaleFactor;   
-        this.cta.ctaButton.setPosition(this.uiContainer.width/2, (this.uiContainer.height - ctaY));
+        this.cta.ctaButton.setPosition(this.centerX, (this.gameHeight - ctaY));
         this.cta.ctaButton.setScale(0.85 * this.scaleFactor);
 
         this.cta.updateCTATextPosition();
