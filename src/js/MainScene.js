@@ -575,9 +575,6 @@ export default class MainScene extends Phaser.Scene {
             );
             this.uiHand.uiHandController.resize(this.scaleFactor);
         }
-
-        // Resize UI container
-        //this.uiContainer.setScale(1);
     }
 
     // Reposition assets for end module
