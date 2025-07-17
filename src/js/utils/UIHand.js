@@ -42,7 +42,7 @@ export default class UIHand {
         // Create UI hand
         const uiHand = this.scene.add.image(this.uiHandStartX, this.uiHandStartY, 'uihand')
                 .setDepth(20)
-                .setScale(this.scaleFactor);
+                .setScale(this.scene.scaleFactor);
             
         let currentTween = null;
     
@@ -113,7 +113,7 @@ export default class UIHand {
                 this.uiHandEndX,
                 this.uiHandEndY
             );
-            this.uiHandController.resize(this.scaleFactor);
+            this.uiHandController.resize(this.scene.scaleFactor);
     
             if (!this.gameOver) {
                 this.uiHandController.show();
