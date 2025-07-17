@@ -3,6 +3,9 @@ const path = require('path');
 const { execSync } = require('child_process');
 const readline = require('readline');
 
+// Import store links configuration
+const storeLinks = require('./src/store-links.js');
+
 // All available ad networks
 const allAdNetworks = [
     'development',
@@ -44,6 +47,25 @@ const rl = readline.createInterface({
 
 // Function to ask a question and return a promise
 const question = (query) => new Promise((resolve) => rl.question(query, resolve));
+
+// Add this function after the imports (around line 8)
+function injectStoreLinks(htmlContent, network) {
+    // Get links for this network, falling back to default
+    const links = storeLinks[network] || storeLinks.default;
+    
+    // Replace the hardcoded URLs with the configured ones
+    htmlContent = htmlContent.replace(
+        /var url = '.*?';\s*\/\/\s*IOS/g,
+        `var url = '${links.ios}'; // IOS`
+    );
+    
+    htmlContent = htmlContent.replace(
+        /var android = '.*?';\s*\/\/\s*ANDROID/g,
+        `var android = '${links.android}'; // ANDROID`
+    );
+    
+    return htmlContent;
+}
 
 // Main async function to handle the interactive flow
 async function main() {
@@ -172,6 +194,9 @@ async function main() {
 
                         // Replace the placeholder with the script content
                         indexContent = indexContent.replace('// P3 SCRIPT HERE', `${scriptContent}`);
+                        
+                        // Inject store links
+                        indexContent = injectStoreLinks(indexContent, network);
 
                         // Write the modified index.html back to the build directory
                         fs.writeFileSync(indexPath, indexContent);
@@ -182,6 +207,17 @@ async function main() {
                         console.log(`Embedded script into index.html for ${network}.`);
                     } else {
                         console.warn(`index.html or playable.js not found for ${network}.`);
+                    }
+                } else {
+                    // For networks that require inlining or adikteev, still inject store links
+                    const buildPath = path.join(buildDir, `${prefix}_${network}`);
+                    const indexPath = path.join(buildPath, 'index.html');
+                    
+                    if (fs.existsSync(indexPath)) {
+                        let indexContent = fs.readFileSync(indexPath, 'utf8');
+                        indexContent = injectStoreLinks(indexContent, network);
+                        fs.writeFileSync(indexPath, indexContent);
+                        console.log(`Injected store links into index.html for ${network}.`);
                     }
                 }
 
