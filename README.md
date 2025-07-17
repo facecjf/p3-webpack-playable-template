@@ -12,10 +12,30 @@
 - Custom build.js Build script with ``` node build.js ``` that targets designated Ad Networks
 - Localization support via ``` languages.json ```
 
+## Updates  
+
+### CTA button and text
+- CTA button and text are created in the `js/utils/CTA.js` file. Positioning is set in the `js/MainScene.js` file.
+
+### UI Hand
+- UI Hand is created in the `js/utils/UIHand.js` file. Positioning is set in the `js/MainScene.js` file.
+
+### Store links
+- Store links are stored in the `src/store-links.js` file.
+- Store links are injected into the `index.html` file at build time.
+
+### Responsive design
+- Responsive design is created in the `js/utils/ResponsiveSettings.js` file.
+
+### Ad network selectable at build time
+- Ad network is selected at build time.
+
 ### In The Works
 :pushpin: Incorporate Languages in build script
 
 :heavy_check_mark: Update build for correct output based on 'INDEX' template html files
+
+:heavy_check_mark: Update build for selectable ad networks
 
 ### Requirements
 [Node.js](https://nodejs.org/) (with npm)
@@ -75,4 +95,3 @@ const spritesheetFiles = {
 
 this.addBitmapText('custom_name3', require('../font/filename4.png'), require('../font/filename4.xml'));
 ```
-
