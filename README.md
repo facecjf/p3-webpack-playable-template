@@ -12,12 +12,6 @@
 
 ## Updates  
 
-### CTA button and text
-- CTA button and text are created in the `js/utils/CTA.js` file. Positioning is set in the `js/MainScene.js` file.
-
-### UI Hand
-- UI Hand is created in the `js/utils/UIHand.js` file. Positioning is set in the `js/MainScene.js` file.
-
 ### Store links
 - Store links are stored in the `src/store-links.js` file.
 - Store links are injected into the `index.html` file at build time.
